@@ -37,7 +37,7 @@ export default function Home() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4">
+        <div>
             {/* Hero */}
             <section className="py-24 bg-green-50">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center md:items-start gap-10 px-4">
@@ -49,12 +49,6 @@ export default function Home() {
                         <p className="text-xl text-gray-700 mb-8 max-w-lg mx-auto md:mx-0">
                             Med Treesy gør vi det billigt, nemt og gennemskueligt at blive klimapositiv
                         </p>
-                        {/*<a
-                            href="#plans"
-                            className="bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-800 transition"
-                        >
-                            Se abonnementer
-                        </a>*/}
                     </div>
 
                     {/* Billede */}
@@ -62,19 +56,15 @@ export default function Home() {
                         <img
                             src="https://usercontent.one/wp/www.nornguest.com/wp-content/uploads/2025/08/IMG_0063-768x1365.jpg?media=1701198767"
                             alt="Treesy inspiration"
-                            className="max-h-[400px] w-auto rounded-lg shadow-lg object-cover"
+                            className="max-h-[500px] w-auto rounded-lg shadow-lg object-cover"
                         />
                     </div>
                 </div>
             </section>
 
-           
-
-
-
-            {/* Impact*/ }
-            <section id="impact" className="bg-white py-20 text-center">
-                <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Impact */}
+            <section id="impact" className="bg-white py-20">
+                <div className="max-w-4xl mx-auto text-center grid grid-cols-1 md:grid-cols-3 gap-10 px-4">
                     <div>
                         <h2 className="text-5xl font-bold text-green-700">12.000+</h2>
                         <p className="text-gray-700 mt-2">Træer plantet</p>
@@ -90,33 +80,38 @@ export default function Home() {
                 </div>
             </section>
 
-
-            {/*Hvordan virker det*/ }
-            <section id="how" className="bg-green-50 py-20 text-center">
-                <h2 className="text-3xl font-bold mb-10 text-green-800">
-                    Sådan virker Treesy
-                </h2>
-                <div className="grid md:grid-cols-3 gap-10 max-w-4xl mx-auto">
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">1️⃣ Vælg abonnement</h3>
-                        <p className="text-gray-700">Du vælger det niveau, der passer til dig.</p>
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">2️⃣ Vi planter træerne</h3>
-                        <p className="text-gray-700">Hver måned sender vi træer ud i verden.</p>
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">3️⃣ Du skaber impact</h3>
-                        <p className="text-gray-700">Din CO₂-neutralitet bliver konkret.</p>
+            {/* Hvordan virker det */}
+            <section id="how" className="bg-green-50 py-20">
+                <div className="max-w-4xl mx-auto text-center px-4">
+                    <h2 className="text-3xl font-bold mb-10 text-green-800">
+                        Sådan virker Treesy
+                    </h2>
+                    <div className="grid md:grid-cols-3 gap-10">
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">1️⃣ Vælg abonnement</h3>
+                            <p className="text-gray-700">Du vælger det niveau, der passer til dig.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">2️⃣ Vi planter træerne</h3>
+                            <p className="text-gray-700">Hver måned sender vi træer ud i verden.</p>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">3️⃣ Du skaber impact</h3>
+                            <p className="text-gray-700">Din CO₂-neutralitet bliver konkret.</p>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Plans */}
-            <section className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {plans.map(plan => (
-                    <PlanCard key={plan.id} plan={plan} />
-                ))}
+            <section className="bg-white py-20">
+                <div className="max-w-6xl mx-auto px-4">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {plans.map(plan => (
+                            <PlanCard key={plan.id} plan={plan} />
+                        ))}
+                    </div>
+                </div>
             </section>
         </div>
     );
