@@ -6,7 +6,7 @@ export default function Navbar() {
                 <div className="space-x-6 text-gray-700">
                     <a href="#plans" className="hover:text-green-700">Abonnementer</a>
                     <a href="#impact" className="hover:text-green-700">Impact</a>
-                    <a href="#how" className="hover:text-green-700">Sådan virker det</a>
+                    <a href="#how" className="hover:text-green-700">SÃ¥dan virker det</a>
                 </div>
             </div>
         </nav>
