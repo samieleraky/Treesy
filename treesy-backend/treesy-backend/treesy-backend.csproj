@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>treesy_backend</RootNamespace>
+    <UserSecretsId>2b89fc17-1ee6-4e4b-adcf-cc61d42d7c0c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
