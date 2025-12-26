@@ -80,6 +80,79 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Hvordan virker det - detaljer */}
+            <section id="how-details" className="bg-white py-20">
+                <div className="max-w-6xl mx-auto px-4">
+
+                    <h2 className="text-3xl font-bold text-center mb-14 text-green-800">
+                        Hvorfor vælge Treesy?
+                    </h2>
+
+                    {/* Top: tekst + billede */}
+                    <div className="grid md:grid-cols-2 gap-12 items-center">
+
+                        {/* Tekst */}
+                        <div className="space-y-6 text-gray-700 text-lg">
+                            <p>
+                                Vi planter <strong>manuelt verificerede træer</strong> for dig i Tanzania.
+                                Træerne plantes af lønnede lokalsamfund i et dedikeret skovområde.
+                            </p>
+
+                            <p>
+                                Du modtager løbende opdateringer og billeder fra træplantningen,
+                                så du kan følge din impact.
+                            </p>
+
+                            <p>
+                                For at sikre at træerne overlever, betaler vi en
+                                <strong> overlevelsesbonus</strong> til de lokale – først når
+                                træerne får lov at vokse.
+                            </p>
+
+                            <p>
+                                Vi bruger ikke dyre certificeringsbureauer – så du får
+                                <strong> maksimal impact for pengene</strong>.
+                            </p>
+                        </div>
+
+                        {/* Billede */}
+                        <div className="flex justify-center md:justify-end">
+                            <img
+                                src="https://usercontent.one/wp/www.nornguest.com/wp-content/uploads/2025/06/468723202_10161037559831542_6834398910979295964_n-1024x768.jpeg?media=1701198767"
+                                alt="Treesy inspiration"
+                                className="max-h-[420px] w-full md:w-auto rounded-xl shadow-lg object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="my-16 border-t"></div>
+
+                    {/* 130 træer */}
+                    <div className="bg-white-50 rounded-2xl p-10 max-w-4xl mx-auto text-center shadow-sm">
+                        <h3 className="text-2xl font-bold mb-4 text-green-800">
+                            Hvorfor netop 130 træer om året?
+                        </h3>
+
+                        <p className="mb-8 text-gray-700">
+                            Ultra simpel og gennemsigtig model:
+                        </p>
+
+                        <div className="space-y-4 text-lg text-gray-700">
+                            <p>🌍 13 tons CO₂ pr. dansker</p>
+                            <p>🌱 100 kg CO₂ pr. træ</p>
+                            <p className="font-semibold text-green-700">
+                                ✅ 130 træer = carbon neutral
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+                    </section>
+                   
+
+
+
             {/* Hvordan virker det */}
             <section id="how" className="bg-green-50 py-20">
                 <div className="max-w-4xl mx-auto text-center px-4">
