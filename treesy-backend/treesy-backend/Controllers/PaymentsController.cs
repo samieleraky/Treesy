@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using Stripe.Checkout;
 
 namespace Treesy.Api.Controllers
@@ -46,8 +47,9 @@ namespace Treesy.Api.Controllers
 
     public class CheckoutRequest
     {
-        public string PlanName { get; set; }
-        public long Amount { get; set; }
-        public string Billing { get; set; }
+        public string PlanName { get; set; } = string.Empty;
+        public long Amount { get; set; } 
+        public string Billing { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty; //string empty betyder at den ikke kan være null
     }
 }
