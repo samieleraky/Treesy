@@ -21,13 +21,42 @@ export default function Checkout() {
             });
     }, [planId]);
 
-    const handlePayment = () => {
-        console.log("Starter betaling:", {
-            planId: plan.id,
-            billing
-        });
+    const handlePayment = async () => {
+        try {
+            const amount =
+                billing === "monthly"
+                    ? plan.monthlyPrice
+                    : plan.yearlyPrice;
 
-        // Stripe kommer i uge 3 🚀
+            const response = await fetch(
+                "http://localhost:5106/api/payments/create-checkout-session", 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        planName: plan.name,
+                        amount: amount,
+                        billing: billing,
+                        email: "test@test.com", // senere: rigtig bruger-email
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Kunne ikke oprette Stripe session");
+            }
+
+            const data = await response.json();
+
+            // 🔥 DETTE ER REDIRECTET TIL STRIPE
+            window.location.href = data.url;
+
+        } catch (error) {
+            console.error("Stripe checkout fejl:", error);
+            alert("Noget gik galt med betalingen");
+        }
     };
 
     if (loading) {
