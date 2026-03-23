@@ -1,60 +1,66 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Stripe;
 using Stripe.Checkout;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace Treesy.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/stripe/webhook")]
     public class WebhookController : ControllerBase
     {
-        private readonly string _mailchimpApiKey = "your-mailchimp-api-key-usX";
-        private readonly string _mailchimpListId = "your-audience-id";
-        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public WebhookController()
+        public WebhookController(IConfiguration config)
         {
-            _httpClient = new HttpClient();
-            var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"anystring:{_mailchimpApiKey}"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
+            _config = config;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            var stripeEvent = EventUtility.ConstructEvent(
-                json,
-                Request.Headers["Stripe-Signature"],
-                "your-webhook-secret"
-            );
+            var json = await new StreamReader(Request.Body).ReadToEndAsync();
 
+            Event stripeEvent;
+
+            try
+            {
+                stripeEvent = EventUtility.ConstructEvent(
+                    json,
+                    Request.Headers["Stripe-Signature"],
+                    _config["Stripe:WebhookSecret"]
+                );
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            // ✅ Når betaling gennemføres
             if (stripeEvent.Type == "checkout.session.completed")
             {
                 var session = stripeEvent.Data.Object as Session;
-                var email = session.CustomerDetails.Email;
 
-                var mcData = new
-                {
-                    email_address = email,
-                    status = "subscribed",
-                    tags = new[] { "Stripe Subscriber" }
-                };
+                var email = session?.CustomerDetails?.Email;
+                var subscriptionId = session?.SubscriptionId;
 
-                var content = new StringContent(JsonConvert.SerializeObject(mcData), Encoding.UTF8, "application/json");
+                // 🔥 HER SKAL DU GEMME I DATABASE (VIGTIGT)
+                // SaveSubscription(email, subscriptionId);
 
-                var url = $"https://usX.api.mailchimp.com/3.0/lists/{_mailchimpListId}/members/";
+                Console.WriteLine($"New subscription: {email}");
+            }
 
-                var response = await _httpClient.PostAsync(url, content);
+            // ✅ Når subscription fortsætter / renew
+            if (stripeEvent.Type == "invoice.paid")
+            {
+                var invoice = stripeEvent.Data.Object as Invoice;
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    // Log fejl hvis ønsket
-                }
+                Console.WriteLine("Subscription renewed");
+            }
+
+            // ❌ Hvis betaling fejler
+            if (stripeEvent.Type == "invoice.payment_failed")
+            {
+                Console.WriteLine("Payment failed");
             }
 
             return Ok();

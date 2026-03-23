@@ -8,31 +8,35 @@ namespace Treesy.Api.Controllers
     [Route("api/[controller]")]
     public class PaymentsController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public PaymentsController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [HttpPost("create-checkout-session")]
         public IActionResult CreateCheckoutSession([FromBody] CheckoutRequest request)
         {
+            // 🔒 Map planId → Stripe PriceId
+            var priceId = GetStripePriceId(request.PlanId, request.Billing);
+
+            if (priceId == null)
+                return BadRequest("Invalid plan");
+
             var options = new SessionCreateOptions
             {
                 Mode = "subscription",
                 SuccessUrl = "http://localhost:5173/success",
                 CancelUrl = "http://localhost:5173/cancel",
+
+                CustomerEmail = request.Email,
+
                 LineItems = new List<SessionLineItemOptions>
                 {
                     new SessionLineItemOptions
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
-                        {
-                            Currency = "dkk",
-                            UnitAmount = request.Amount * 100, // øre
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = request.PlanName
-                            },
-                            Recurring = new SessionLineItemPriceDataRecurringOptions
-                            {
-                                Interval = request.Billing == "monthly" ? "month" : "year"
-                            }
-                        },
+                        Price = priceId,
                         Quantity = 1
                     }
                 }
@@ -43,13 +47,26 @@ namespace Treesy.Api.Controllers
 
             return Ok(new { url = session.Url });
         }
+        //Sample map. In production, you would likely want to store this mapping in a database or configuration file.
+        private string? GetStripePriceId(string planId, string billing)
+        {
+            return (planId, billing) switch
+            {
+                ("carbon-neutral", "monthly") => "price_123",
+                ("carbon-neutral", "yearly") => "price_456",
+
+                ("carbon-net-plus", "monthly") => "price_789",
+                ("carbon-net-plus", "yearly") => "price_101",
+
+                _ => null
+            };
+        }
     }
 
     public class CheckoutRequest
     {
-        public string PlanName { get; set; } = string.Empty;
-        public long Amount { get; set; } 
-        public string Billing { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty; //string empty betyder at den ikke kan være null
+        public string PlanId { get; set; } = "";
+        public string Billing { get; set; } = "";
+        public string Email { get; set; } = "";
     }
 }
