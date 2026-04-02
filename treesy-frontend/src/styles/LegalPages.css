@@ -1,0 +1,378 @@
+/* ============================================================
+   LEGAL PAGES (Terms, Privacy, Disclaimer, FAQ)
+   ============================================================ */
+
+/* ── Shared hero styles for all legal pages ── */
+.legal-page{
+
+    background: #F5F5F0;
+    min-height: 100vh;    
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.legal-hero,
+.privacy-hero,
+.disclaimer-hero {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  left: 50% !important;
+  right: 50% !important;
+  position: relative;
+  padding: 100px 20px 60px;
+  background: linear-gradient(135deg, #44876D 0%, #2c5a48 100%);
+  text-align: center;
+}
+
+.legal-hero h1,
+.privacy-hero h1,
+.disclaimer-hero h1 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.legal-hero p,
+.disclaimer-hero p {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.privacy-hero .intro-text {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Terms & Conditions ── */
+.legal-content {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 60px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+.legal-intro {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.legal-intro p {
+  color: #4b5563;
+  line-height: 1.8;
+}
+
+.legal-section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.legal-section:last-child {
+  border-bottom: none;
+}
+
+.legal-section h3 {
+  color: #065f46;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.legal-section p {
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.legal-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.legal-section li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.legal-section li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.legal-section strong {
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ── Privacy Policy ── */
+.privacy-content {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 60px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+.privacy-section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.privacy-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.privacy-section:first-child {
+  padding-top: 0;
+}
+
+.privacy-section h2 {
+  color: #065f46;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+}
+
+.privacy-section p {
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.privacy-section li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.privacy-section li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.privacy-section strong {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.contact-box {
+  background: linear-gradient(135deg, #f0f9f6 0%, #e6f7f0 100%);
+  padding: 28px;
+  border-radius: 16px;
+  margin: 1.5rem 0;
+}
+
+.contact-box p {
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.contact-box p:last-child {
+  margin-bottom: 0;
+}
+
+.privacy-highlight {
+  background: #f0fdf4;
+  padding: 24px;
+  border-radius: 16px;
+  border-left: 4px solid #10b981;
+  margin: 2rem 0;
+}
+
+.privacy-highlight p {
+  margin: 0;
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ── Disclaimer ── */
+.disclaimer-section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 60px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+.disclaimer-section h2 {
+  color: #065f46;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #10b981;
+  font-size: 2rem;
+}
+
+.disclaimer-section h3 {
+  color: #065f46;
+  margin: 2rem 0 1rem;
+  font-size: 1.3rem;
+}
+
+.disclaimer-section p {
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.disclaimer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.disclaimer-section li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.disclaimer-section li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.disclaimer-section strong {
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ── FAQ ── */
+.faq-section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 60px;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+.faq-section h2 {
+  color: #065f46;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #10b981;
+  font-size: 2rem;
+}
+
+.faq-card {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.faq-card:last-child {
+  border-bottom: none;
+}
+
+.faq-card h3 {
+  color: #065f46;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.faq-card p {
+  line-height: 1.8;
+  color: #374151;
+  margin-bottom: 1.25rem;
+}
+
+.faq-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0;
+}
+
+.faq-card li {
+  position: relative;
+  padding-left: 32px;
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.faq-card li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.faq-card strong {
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .legal-hero,
+  .privacy-hero,
+  .disclaimer-hero {
+    padding: 60px 16px;
+  }
+
+  .legal-hero h1,
+  .privacy-hero h1,
+  .disclaimer-hero h1 {
+    font-size: 2rem;
+  }
+
+  .legal-content,
+  .privacy-content,
+  .disclaimer-section,
+  .faq-section {
+    margin: 40px 16px;
+    padding: 40px 24px;
+  }
+
+  .legal-section,
+  .privacy-section {
+    padding: 2rem 0;
+  }
+
+  .legal-section h3,
+  .privacy-section h2,
+  .disclaimer-section h2,
+  .faq-section h2 {
+    font-size: 1.3rem;
+  }
+}

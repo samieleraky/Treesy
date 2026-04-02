@@ -1,14 +1,61 @@
+import { Link } from "react-router-dom"; 
+import { useEffect, useState } from "react";
+
+
 export default function Navbar() {
-    return (
-        <nav className="bg-white shadow-md py-4">
-            <div className="max-w-6xl mx-auto flex justify-between items-center px-4">
-                <h1 className="text-2xl font-bold text-green-700">Treesy</h1>
-                <div className="space-x-6 text-gray-700">
-                    <a href="#plans" className="hover:text-green-700">Abonnementer</a>
-                    <a href="#impact" className="hover:text-green-700">Impact</a>
-                    <a href="#how" className="hover:text-green-700">Sådan virker det</a>
-                </div>
-            </div>
-        </nav>
-    );
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav className={`ts-navbar ${scrolled ? "scrolled" : ""}`}>
+      <div className="ts-navbar-container">
+        
+        {/* Logo */}
+        <Link to="/" className="ts-logo">
+          <img
+            src={scrolled ? "/B-transparent-bg.png" : "/B2-transparent-bg.png"}
+            alt="Treesy logo"
+          />
+        </Link>
+
+        {/* Desktop menu */}
+        <div className="ts-nav-links">
+          <Link to="/">Forside</Link>
+          <Link to="/metoder">Metoder</Link>
+          <Link to="/om-treesy">Om Treesy</Link>
+          <Link to="/disclaimer">Disclaimer & FAQ</Link>
+          <Link to="/erhverv">Erhverv</Link>
+          <Link to="/kontakt">Kontakt</Link>
+        </div>
+
+        {/* Burger */}
+        <div className="ts-burger" onClick={() => setMenuOpen(!menuOpen)}>
+          ☰
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="ts-mobile-menu">
+          <Link to="/" onClick={() => setMenuOpen(false)}>Forside</Link>
+          <Link to="/metoder" onClick={() => setMenuOpen(false)}>Metoder</Link>
+          <Link to="/om-treesy" onClick={() => setMenuOpen(false)}>Om Treesy</Link>
+            <Link to="/disclaimer" onClick={() => setMenuOpen(false)}>Disclaimer & FAQ</Link>
+            <Link to="/erhverv" onClick={() => setMenuOpen(false)}>Erhverv</Link>
+            <Link to="/kontakt" onClick={() => setMenuOpen(false)}>Kontakt</Link>
+        </div>
+      )}
+    </nav>
+  );
 }

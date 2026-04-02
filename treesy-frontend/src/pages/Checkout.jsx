@@ -36,8 +36,7 @@ export default function Checkout() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        planName: plan.name,
-                        amount: amount,
+                        planName: plan.Id,
                         billing: billing,
                         email: "test@test.com", // senere: rigtig bruger-email
                     }),
