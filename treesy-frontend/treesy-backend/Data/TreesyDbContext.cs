@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using treesy_backend.Models;
 
 namespace treesy_backend.Data
 {
-    
     public class TreesyDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         public TreesyDbContext(DbContextOptions<TreesyDbContext> options) : base(options) { }

@@ -43,20 +43,10 @@ namespace Treesy.Api.Controllers
                 var email = session?.CustomerDetails?.Email ?? "";
                 var mode = session?.Mode;
 
-                var customer = await _db.Customers
-    .FirstOrDefaultAsync(c => c.Email == email);
+                var customer = await _db.Customers.FirstOrDefaultAsync(c => c.Email == email)
+                    ?? new treesy_backend.Models.Customer { Email = email, StripeCustomerId = session?.CustomerId ?? "" };
 
-                if (customer == null)
-                {
-                    customer = new Customer
-                    {
-                        Email = email,
-                        StripeCustomerId = session?.CustomerId ?? ""
-                    };
-
-                    _db.Customers.Add(customer);
-                    await _db.SaveChangesAsync(); // 🔥 vigtigt!
-                }
+                if (customer.Id == Guid.Empty) _db.Customers.Add(customer);
 
                 if (mode == "subscription")
                 {

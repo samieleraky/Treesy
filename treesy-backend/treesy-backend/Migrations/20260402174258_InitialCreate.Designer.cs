@@ -12,7 +12,7 @@ using treesy_backend.Data;
 namespace treesy_backend.Migrations
 {
     [DbContext(typeof(TreesyDbContext))]
-    [Migration("20260402113206_InitialCreate")]
+    [Migration("20260402174258_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -76,7 +76,8 @@ namespace treesy_backend.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("AmountDkk")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");

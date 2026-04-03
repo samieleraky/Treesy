@@ -11,6 +11,8 @@ import Terms from "./pages/Terms.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Contact from "./pages/Contact.jsx";
 import ErhvervsPage from "./pages/ErhvervsPage.jsx";
+import SuccessPage from "./pages/SuccessPage.jsx";
+import CancelPage from "./pages/CancelPage.jsx";
 
 function App() {
     
@@ -26,9 +28,8 @@ function App() {
                 <Route path="/metoder" element={<Metoder />} />
                 <Route path="/erhverv" element={<ErhvervsPage />} />
                 <Route path="/kontakt" element={<Contact />} />
-
-
-                [/* LEGAL PAGES */]
+                <Route path="/success" element={<SuccessPage />} />
+                <Route path="/cancel" element={<CancelPage />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
             </Routes>
