@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState, useRef } from "react";
 import '../styles/styles.css';
+import {Link} from "react-router-dom";
 
 // ── Static content (skifter aldrig — hører ikke hjemme i API) ─
 const STEPS = [
@@ -55,7 +56,7 @@ export default function Home() {
           <span className="ts-hero-sub">at blive carbon positiv gennem træplantning i Tanzania</span>
           <div className="ts-hero-btns">
             <a href="#pakker" className="ts-hero-btn">🌱 Køb abonnement (Privat)</a>
-            <a href="/business/#seed-pakker" className="ts-hero-btn">🏢 Køb seed credits (Business)</a>
+            <Link to="/erhverv#seed-pakker" className="ts-hero-btn">🏢 Køb seed credits (Business)</Link>
           </div>
         </div>
       </section>
