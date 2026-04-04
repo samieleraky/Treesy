@@ -9,7 +9,7 @@ using treesy_backend.Data;
 namespace Treesy.Api.Controllers
 {
     [ApiController] //Den tillader at klassen fungerer som en API-controller, hvilket betyder, at den kan håndtere HTTP-anmodninger og returnere HTTP-responser.
-    [Route("api/controller")] //Definerer ruten for controlleren. "controller" er en placeholder, der automatisk erstattes med navnet på controlleren (uden "Controller"-suffikset). I dette tilfælde vil ruten være "api/dashboard".
+    [Route("api/[controller]")] //Definerer ruten for controlleren. "controller" er en placeholder, der automatisk erstattes med navnet på controlleren (uden "Controller"-suffikset). I dette tilfælde vil ruten være "api/dashboard".
     [Authorize] //Angiver, at alle handlinger i denne controller kræver, at brugeren er autentificeret. Det betyder, at kun brugere, der har logget ind og har en gyldig token, kan få adgang til disse endpoints.
 
     public class DashboardController : ControllerBase
