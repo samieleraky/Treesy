@@ -45,7 +45,6 @@ namespace treesy_backend.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StripeCustomerId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TotalTreesPlanted")

@@ -31,6 +31,7 @@ export default function Navbar({ forceScrolled = false }) {
           <Link to="/disclaimer">Disclaimer & FAQ</Link>
           <Link to="/erhverv">Erhverv</Link>
           <Link to="/kontakt">Kontakt</Link>
+          <Link to="/login" className="ts-login-btn">Login</Link>
         </div>
 
         <div className="ts-burger" onClick={() => setMenuOpen(!menuOpen)}>☰</div>

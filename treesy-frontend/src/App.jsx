@@ -13,6 +13,9 @@ import Contact from "./pages/Contact.jsx";
 import ErhvervsPage from "./pages/ErhvervsPage.jsx";
 import SuccessPage from "./pages/SuccessPage.jsx";
 import CancelPage from "./pages/CancelPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
     
@@ -32,8 +35,12 @@ function App() {
                 <Route path="/cancel" element={<CancelPage />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
-            </Routes>
-            <Footer />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/dashboard" element={ <ProtectedRoute>
+                <DashboardPage />
+                </ProtectedRoute>} />
+                </Routes>
+                <Footer />
 
     </>
     );

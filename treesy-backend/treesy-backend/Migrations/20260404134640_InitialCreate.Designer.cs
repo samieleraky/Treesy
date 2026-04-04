@@ -11,7 +11,7 @@ using treesy_backend.Data;
 namespace treesy_backend.Migrations
 {
     [DbContext(typeof(TreesyDbContext))]
-    [Migration("20260404111236_InitialCreate")]
+    [Migration("20260404134640_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -48,7 +48,6 @@ namespace treesy_backend.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StripeCustomerId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TotalTreesPlanted")

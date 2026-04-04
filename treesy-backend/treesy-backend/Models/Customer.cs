@@ -5,7 +5,7 @@ namespace treesy_backend.Models
     public class Customer
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string StripeCustomerId { get; set; }="";
+        public string? StripeCustomerId { get; set; }
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = ""; // For email/password (authentication)
         public string? Name { get; set; }

@@ -16,7 +16,7 @@ namespace treesy_backend.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StripeCustomerId = table.Column<string>(type: "TEXT", nullable: false),
+                    StripeCustomerId = table.Column<string>(type: "TEXT", nullable: true),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
@@ -87,11 +87,11 @@ namespace treesy_backend.Migrations
                 column: "Email",
                 unique: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Customers_StripeCustomerId",
-                table: "Customers",
-                column: "StripeCustomerId",
-                unique: true);
+            //migrationBuilder.CreateIndex(
+                //name: "IX_Customers_StripeCustomerId",
+                //table: "Customers",
+                //column: "StripeCustomerId",
+                //unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",

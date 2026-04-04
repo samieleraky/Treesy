@@ -25,7 +25,7 @@
     <PackageReference Include="Newtonsoft.json" Version="13.0.4" />
     <PackageReference Include="Stripe.net" Version="50.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
   </ItemGroup>
 
 </Project>
