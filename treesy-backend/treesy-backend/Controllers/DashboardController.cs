@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 using treesy_backend.Data;
 
@@ -89,34 +90,28 @@ namespace Treesy.Api.Controllers
 
             // Seneste transaktioner — både abonnementer og orders
             var recentOrders = customer.Orders
-                .OrderByDescending(o => o.CreatedAt)
-                .Take(5)
-                .Select(o => new
-                {
-                    id = o.Id,
-                    description = FormatPlanName(o.PlanId) + " — engangskøb",
-                    date = o.CreatedAt.ToString("d. MMMM yyyy"),
-                    amount = (int)o.AmountDkk,
-                    status = o.Status
-                })
-                .ToList<object>();
+     .Select(o => new
+     {
+         id = o.Id,
+         description = FormatPlanName(o.PlanId) + " — engangskøb",
+         date = o.CreatedAt,
+         amount = (int)o.AmountDkk,
+         status = o.Status
+     });
 
             var recentSubs = customer.Subscriptions
-                .OrderByDescending(s => s.CreatedAt)
-                .Take(5)
                 .Select(s => new
                 {
                     id = s.Id,
                     description = FormatPlanName(s.PlanId) + " — " + (s.Billing == "yearly" ? "årlig" : "månedlig"),
-                    date = s.CreatedAt?.ToString("d. MMMM yyyy") ?? "",
+                    date = s.CreatedAt ?? DateTime.MinValue, // 🔥 FIX
                     amount = GetMonthlyPrice(s.PlanId, s.Billing),
                     status = s.Status
-                })
-                .ToList<object>();
+                });
 
             var transactions = recentOrders
                 .Concat(recentSubs)
-                .OrderByDescending(t => t)
+                .OrderByDescending(t => t.date)
                 .Take(5)
                 .ToList();
 

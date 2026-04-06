@@ -155,6 +155,7 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [needsPassword, setNeedsPassword] = useState(false);  
 
   const { login, isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -180,6 +181,29 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
+// Sæt-kodeord flow (Stripe-kunde uden password)
+    if (needsPassword) {
+      try {
+        const res = await fetch("http://localhost:5106/api/Auth/set-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name }),
+        });
+        const data = await res.json();
+        if (!res.ok) { setError(data.message ?? "Noget gik galt"); return; }
+        login(data);
+        navigate("/dashboard");
+      } catch {
+        setError("Kunne ikke forbinde til serveren");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+
+
+
     const endpoint = tab === "login"
       ? "http://localhost:5106/api/Auth/login"
       : "http://localhost:5106/api/Auth/register";
@@ -197,7 +221,13 @@ export default function LoginPage() {
 
       const data = await res.json();
 
-      if (!res.ok) {
+       if (!res.ok) {
+        // Stripe-kunde uden kodeord → vis sæt-kodeord flow
+        if (data.message === "no_password") {
+          setNeedsPassword(true);
+          setError(null);
+          return;
+        }
         setError(data.message ?? "Noget gik galt — prøv igen");
         return;
       }
@@ -210,6 +240,45 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
+
+// Sæt-kodeord UI (når Stripe-kunde logger ind første gang)
+  if (needsPassword) {
+    return (
+      <>
+        <Navbar forceScrolled={true} />
+        <div className="login-page">
+          <div className="login-card">
+            <div className="login-logo">
+              <img src="/B-transparent-bg.png" alt="Treesy" />
+            </div>
+            <h1 className="login-title">Velkommen! 🌱</h1>
+            <p className="login-sub">
+              Vi kan se du allerede har købt en pakke. Vælg et kodeord for at aktivere din konto.
+            </p>
+            {error && <div className="login-error">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="login-field">
+                <label className="login-label">Dit navn</label>
+                <input className="login-input" type="text" placeholder="Dit navn"
+                  value={name} onChange={e => setName(e.target.value)} required />
+              </div>
+              <div className="login-field">
+                <label className="login-label">Vælg kodeord</label>
+                <input className="login-input" type="password" placeholder="••••••••"
+                  value={password} onChange={e => setPassword(e.target.value)}
+                  required minLength={6} />
+              </div>
+              <button className="login-btn" type="submit" disabled={loading}>
+                {loading ? "Vent..." : "Aktiver konto"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+
 
   return (
     <>

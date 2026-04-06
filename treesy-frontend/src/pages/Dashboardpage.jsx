@@ -590,7 +590,13 @@ export default function DashboardPage() {
                 <div className="db-tx-row" key={i}>
                   <div>
                     <div className="db-tx-name">{tx.description}</div>
-                    <div className="db-tx-date">{tx.date}</div>
+                    <div className="db-tx-date">
+  {new Date(tx.date).toLocaleDateString("da-DK", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })}
+</div>
                   </div>
                   <div className="db-tx-right">
                     <span className="db-tx-amount">{fmt(tx.amount)} kr</span>

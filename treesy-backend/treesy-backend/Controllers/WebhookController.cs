@@ -23,77 +23,123 @@ namespace Treesy.Api.Controllers
         public async Task<IActionResult> Post()
         {
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
-            Stripe.Event stripeEvent;                          // ← fuldt navn
+            Stripe.Event stripeEvent;
+
             try
             {
-                stripeEvent = Stripe.EventUtility.ConstructEvent( // ← fuldt navn
+                stripeEvent = Stripe.EventUtility.ConstructEvent(
                     json,
                     Request.Headers["Stripe-Signature"],
                     _config["Stripe:WebhookSecret"]
                 );
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"❌ Webhook signature verification failed: {ex.Message}");
                 return BadRequest();
             }
 
             if (stripeEvent.Type == "checkout.session.completed")
             {
                 var session = stripeEvent.Data.Object as Session;
-                var email = session?.CustomerDetails?.Email ?? "";
+                var email = session?.CustomerDetails?.Email?.Trim().ToLower() ?? "";
                 var mode = session?.Mode;
 
-                var customer = await _db.Customers
-    .FirstOrDefaultAsync(c => c.Email == email);
+                Console.WriteLine($"📦 Webhook received: mode={mode}, email={email}");
+                Console.WriteLine($"Metadata: planId={session?.Metadata["planId"]}, billing={session?.Metadata["billing"]}");
 
-                if (customer == null)
+                try
                 {
-                    customer = new Customer
+                    var customer = await _db.Customers.FirstOrDefaultAsync(c => c.Email == email);
+
+                    if (customer == null)
                     {
-                        Email = email,
-                        StripeCustomerId = session?.CustomerId ?? ""
-                    };
+                        customer = new Customer
+                        {
+                            Email = email,
+                            StripeCustomerId = session?.CustomerId ?? "",
+                            PasswordHash = "",
+                            CustomerType = "private",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+                        _db.Customers.Add(customer);
+                        await _db.SaveChangesAsync();
+                        Console.WriteLine($"✅ Customer created: {customer.Id}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"✅ Customer found: {customer.Id}");
+                    }
 
-                    _db.Customers.Add(customer);
-                    await _db.SaveChangesAsync(); // 🔥 vigtigt!
+                    var planId = session?.Metadata["planId"];
+                    var billing = session?.Metadata["billing"];
+
+                    if (string.IsNullOrEmpty(planId))
+                    {
+                        Console.WriteLine("❌ ERROR: planId is null or empty!");
+                        return Ok(); // Return ok to Stripe, but log error
+                    }
+
+                    if (mode == "subscription")
+                    {
+                        var subscription = new treesy_backend.Models.Subscription
+                        {
+                            Id = Guid.NewGuid(),
+                            CustomerId = customer.Id,
+                            StripeSubscriptionId = session!.SubscriptionId ?? "",
+                            PlanId = planId,
+                            Billing = billing ?? "monthly",
+                            CurrentPeriodEnd = DateTime.UtcNow.AddMonths(1),
+                            Status = "active",
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        _db.Subscriptions.Add(subscription);
+                        customer.TotalTreesPlanted += GetTreesForPlan(planId);
+                        Console.WriteLine($"✅ Subscription added: {subscription.PlanId}");
+                    }
+                    else if (mode == "payment")
+                    {
+                        var order = new Order
+                        {
+                            Id = Guid.NewGuid(),
+                            CustomerId = customer.Id,
+                            StripeSessionId = session!.Id,
+                            PlanId = planId,
+                            Trees = GetTreesForPlan(planId),
+                            AmountDkk = (session.AmountTotal ?? 0) / 100m,
+                            Status = "paid",
+                            CreatedAt = DateTime.UtcNow
+                        };
+                        _db.Orders.Add(order);
+                        customer.TotalTreesPlanted += GetTreesForPlan(planId);
+                        Console.WriteLine($"✅ Order added: {order.PlanId}, Amount: {order.AmountDkk}");
+                    }
+
+                    customer.UpdatedAt = DateTime.UtcNow;
+
+                    // FANG eventuelle exceptions her!
+                    try
+                    {
+                        await _db.SaveChangesAsync();
+                        Console.WriteLine($"✅ Database saved successfully!");
+                    }
+                    catch (Exception dbEx)
+                    {
+                        Console.WriteLine($"❌ Database error: {dbEx.Message}");
+                        if (dbEx.InnerException != null)
+                            Console.WriteLine($"Inner: {dbEx.InnerException.Message}");
+                        throw; // Re-throw to see the actual error
+                    }
                 }
-
-                if (mode == "subscription")
+                catch (Exception ex)
                 {
-                    _db.Subscriptions.Add(new treesy_backend.Models.Subscription
-                    {
-                        CustomerId = customer.Id,
-                        StripeSubscriptionId = session!.SubscriptionId ?? "",
-                        PlanId = session.Metadata["planId"],
-                        Billing = session.Metadata["billing"],
-                        CurrentPeriodEnd = DateTime.UtcNow.AddMonths(1),
-                        Status = "active"
-                    });
-                    customer.TotalTreesPlanted += GetTreesForPlan(session.Metadata["planId"]);
+                    Console.WriteLine($"❌ Webhook processing error: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    // Return ok to Stripe so it doesn't retry
+                    return Ok();
                 }
-                else if (mode == "payment")
-                {
-                    _db.Orders.Add(new Order
-                    {
-                        CustomerId = customer.Id,
-                        StripeSessionId = session!.Id,
-                        PlanId = session.Metadata["planId"],
-                        Trees = GetTreesForPlan(session.Metadata["planId"]),
-                        AmountDkk = (session.AmountTotal ?? 0) / 100m,
-                        Status = "paid"
-                    });
-                    customer.TotalTreesPlanted += GetTreesForPlan(session.Metadata["planId"]);
-                }
-
-                customer.UpdatedAt = DateTime.UtcNow;
-                await _db.SaveChangesAsync();
             }
-
-            if (stripeEvent.Type == "invoice.paid")
-                Console.WriteLine("Subscription renewed");
-
-            if (stripeEvent.Type == "invoice.payment_failed")
-                Console.WriteLine("Payment failed");
 
             return Ok();
         }
