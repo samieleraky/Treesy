@@ -35,7 +35,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TreesyDbContext>(options =>
-    options.UseSqlite("Data Source=treesy.db"));
+    options.UseNpgsql(
+        "Host=localhost;Port=5432;Database=treesy_db;Username=postgres;Password=Sami12345"
+    ));
 
 //Stripe
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];

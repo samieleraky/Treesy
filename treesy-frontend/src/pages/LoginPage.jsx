@@ -157,7 +157,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [needsPassword, setNeedsPassword] = useState(false);  
 
-  const { login, isLoggedIn } = useAuth();
+  const { login, logout, isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   // Inject styles
@@ -374,7 +374,29 @@ export default function LoginPage() {
             )}
           </p>
 
+{/* Tilføj denne knap lige før den afsluttende </div> */}
+{isLoggedIn && (
+  <button 
+    onClick={() => {
+      logout();
+      navigate("/");
+    }}
+    style={{
+      marginTop: "16px",
+      padding: "8px",
+      background: "none",
+      border: "1px solid #e5e7eb",
+      borderRadius: "8px",
+      color: "#6b7280",
+      cursor: "pointer",
+      width: "100%"
+    }}
+  >
+    Log ud
+  </button>
+)}
         </div>
+
       </div>
     </>
   );

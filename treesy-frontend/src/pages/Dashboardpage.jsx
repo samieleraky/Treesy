@@ -329,7 +329,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user?.token) return;
 
-    fetch("http://localhost:5106/api/Dashboard", {
+    fetch("http://localhost:5106/api/dashboard", {
       headers: { Authorization: `Bearer ${user.token}` },
     })
       .then((res) => {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace treesy_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,16 +15,16 @@ namespace treesy_backend.Migrations
                 name: "Customers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StripeCustomerId = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Company = table.Column<string>(type: "TEXT", nullable: true),
-                    CustomerType = table.Column<string>(type: "TEXT", nullable: false),
-                    TotalTreesPlanted = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StripeCustomerId = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Company = table.Column<string>(type: "text", nullable: true),
+                    CustomerType = table.Column<string>(type: "text", nullable: false),
+                    TotalTreesPlanted = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,15 +35,15 @@ namespace treesy_backend.Migrations
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StripePaymentIntentId = table.Column<string>(type: "TEXT", nullable: true),
-                    StripeSessionId = table.Column<string>(type: "TEXT", nullable: false),
-                    PlanId = table.Column<string>(type: "TEXT", nullable: false),
-                    Trees = table.Column<int>(type: "INTEGER", nullable: false),
-                    AmountDkk = table.Column<decimal>(type: "TEXT", precision: 10, scale: 2, nullable: false),
-                    Status = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StripePaymentIntentId = table.Column<string>(type: "text", nullable: true),
+                    StripeSessionId = table.Column<string>(type: "text", nullable: false),
+                    PlanId = table.Column<string>(type: "text", nullable: false),
+                    Trees = table.Column<int>(type: "integer", nullable: false),
+                    AmountDkk = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,15 +60,15 @@ namespace treesy_backend.Migrations
                 name: "Subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    StripeSubscriptionId = table.Column<string>(type: "TEXT", nullable: false),
-                    PlanId = table.Column<string>(type: "TEXT", nullable: false),
-                    Billing = table.Column<string>(type: "TEXT", nullable: false),
-                    Status = table.Column<string>(type: "TEXT", nullable: false),
-                    CurrentPeriodEnd = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CancelledAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    StripeSubscriptionId = table.Column<string>(type: "text", nullable: false),
+                    PlanId = table.Column<string>(type: "text", nullable: false),
+                    Billing = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    CurrentPeriodEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CancelledAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -87,11 +87,11 @@ namespace treesy_backend.Migrations
                 column: "Email",
                 unique: true);
 
-            //migrationBuilder.CreateIndex(
-                //name: "IX_Customers_StripeCustomerId",
-                //table: "Customers",
-                //column: "StripeCustomerId",
-                //unique: true);
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_StripeCustomerId",
+                table: "Customers",
+                column: "StripeCustomerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
