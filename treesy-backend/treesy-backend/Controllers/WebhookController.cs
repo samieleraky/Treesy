@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
 using treesy_backend.Data;
 using treesy_backend.Models;
+using treesy_backend.Services;
 
 namespace Treesy.Api.Controllers
 {
@@ -12,11 +13,13 @@ namespace Treesy.Api.Controllers
     {
         private readonly IConfiguration _config;
         private readonly TreesyDbContext _db;
+        private readonly EmailService _email;
 
-        public WebhookController(IConfiguration config, TreesyDbContext db)
+        public WebhookController(IConfiguration config, TreesyDbContext db, EmailService email)
         {
             _config = config;
             _db = db;
+            _email = email;
         }
 
         [HttpPost]
@@ -45,8 +48,23 @@ namespace Treesy.Api.Controllers
                 var email = session?.CustomerDetails?.Email?.Trim().ToLower() ?? "";
                 var mode = session?.Mode;
 
+                // ✅ FIX 1: Hent planId og billing FØRST (flyttet op!)
+                var planId = session?.Metadata["planId"];
+                var billing = session?.Metadata["billing"];
+
                 Console.WriteLine($"📦 Webhook received: mode={mode}, email={email}");
-                Console.WriteLine($"Metadata: planId={session?.Metadata["planId"]}, billing={session?.Metadata["billing"]}");
+                Console.WriteLine($"Metadata: planId={planId}, billing={billing}");
+
+                // Tjek om planId findes
+                if (string.IsNullOrEmpty(planId))
+                {
+                    Console.WriteLine("❌ ERROR: planId is null or empty!");
+                    return Ok();
+                }
+
+                // ✅ FIX 2: Brug planId og billing HER (de er nu defineret)
+                var planName = FormatPlanName(planId);
+                var trees = GetTreesForPlan(planId);
 
                 try
                 {
@@ -64,7 +82,7 @@ namespace Treesy.Api.Controllers
                             UpdatedAt = DateTime.UtcNow
                         };
                         _db.Customers.Add(customer);
-                        await _db.SaveChangesAsync();
+                        await _db.SaveChangesAsync(); // Gem først for at få Customer.Id
                         Console.WriteLine($"✅ Customer created: {customer.Id}");
                     }
                     else
@@ -72,15 +90,7 @@ namespace Treesy.Api.Controllers
                         Console.WriteLine($"✅ Customer found: {customer.Id}");
                     }
 
-                    var planId = session?.Metadata["planId"];
-                    var billing = session?.Metadata["billing"];
-
-                    if (string.IsNullOrEmpty(planId))
-                    {
-                        Console.WriteLine("❌ ERROR: planId is null or empty!");
-                        return Ok(); // Return ok to Stripe, but log error
-                    }
-
+                    // Opret subscription eller order
                     if (mode == "subscription")
                     {
                         var subscription = new treesy_backend.Models.Subscription
@@ -117,31 +127,58 @@ namespace Treesy.Api.Controllers
                     }
 
                     customer.UpdatedAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
 
-                    // FANG eventuelle exceptions her!
-                    try
+                    // ✅ FIX 3: Send email EFTER alt er gemt (flyttet ned!)
+                    if (mode == "subscription")
                     {
-                        await _db.SaveChangesAsync();
-                        Console.WriteLine($"✅ Database saved successfully!");
+                        _ = _email.SendOrderConfirmationAsync(
+                            email,
+                            customer.Name ?? email,
+                            planName,
+                            billing ?? "monthly",
+                            (session.AmountTotal ?? 0) / 100m,
+                            trees,
+                            DateTime.UtcNow.AddMonths(1)
+                        );
                     }
-                    catch (Exception dbEx)
+                    else if (mode == "payment")
                     {
-                        Console.WriteLine($"❌ Database error: {dbEx.Message}");
-                        if (dbEx.InnerException != null)
-                            Console.WriteLine($"Inner: {dbEx.InnerException.Message}");
-                        throw; // Re-throw to see the actual error
+                        _ = _email.SendOrderConfirmationAsync(
+                            email,
+                            customer.Name ?? email,
+                            planName,
+                            "onetime",
+                            (session.AmountTotal ?? 0) / 100m,
+                            trees,
+                            DateTime.UtcNow
+                        );
                     }
+
+                    Console.WriteLine($"✅ Database saved successfully!");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"❌ Webhook processing error: {ex.Message}");
                     Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                    // Return ok to Stripe so it doesn't retry
                     return Ok();
                 }
             }
 
             return Ok();
+        }
+
+        // ✅ FIX 4: Tilføj den manglende FormatPlanName funktion
+        private static string FormatPlanName(string planId)
+        {
+            return planId switch
+            {
+                "active-planter" or "active-planter-seed" => "Active Planter",
+                "committed-planter" or "committed-planter-seed" => "Committed Planter",
+                "hero-planter" or "hero-planter-seed" => "Hero Planter",
+                "legend-planter" or "legend-planter-seed" => "Legend Planter",
+                _ => planId // Hvis ukendt, returnér originalt navn
+            };
         }
 
         private static int GetTreesForPlan(string planId) => planId switch

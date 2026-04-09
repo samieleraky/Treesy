@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 using treesy_backend.Data;
+using treesy_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddSingleton<EmailService>(); // email service som singleton, da den ikke har nogen state og kan genbruges
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Text;
 using treesy_backend.Data;
 using treesy_backend.Models;
+using treesy_backend.Services;
+
 
 namespace Treesy.Api.Controllers
 {
@@ -15,11 +17,14 @@ namespace Treesy.Api.Controllers
     {
         private readonly TreesyDbContext _db;
         private readonly IConfiguration _config;
+        private readonly EmailService _email;
+        
 
-        public AuthController(TreesyDbContext db, IConfiguration config)
+        public AuthController(TreesyDbContext db, IConfiguration config, EmailService email)
         {
             _db = db;
             _config = config;
+            _email = email; 
         }
 
         // POST /api/auth/register
@@ -38,6 +43,8 @@ namespace Treesy.Api.Controllers
                 existing.Name = request.Name ?? existing.Name;
                 existing.UpdatedAt = DateTime.UtcNow;
                 await _db.SaveChangesAsync();
+
+                _ = _email.SendWelcomeEmailAsync(existing.Email, existing.Name ?? existing.Email);
 
                 var t = GenerateToken(existing);
                 return Ok(new { token = t, email = existing.Email, name = existing.Name });
@@ -108,6 +115,8 @@ namespace Treesy.Api.Controllers
             customer.Name = request.Name ?? customer.Name;
             customer.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
+
+            _ = _email.SendWelcomeEmailAsync(customer.Email, customer.Name ?? customer.Email);
 
             var token = GenerateToken(customer);
             return Ok(new { token, email = customer.Email, name = customer.Name });
