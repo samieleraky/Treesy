@@ -16,46 +16,47 @@ namespace treesy_backend.Services
         public async Task SendWelcomeEmailAsync(string toEmail, string name)
         {
             var html = $@"
-            <div style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
-                        max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;
-                        overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)'>
+ <div style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
+             max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;
+             overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)'>
 
-                <div style='background:linear-gradient(135deg,#065f46,#10b981);
-                            padding:40px 32px;text-align:center'>
-                    <h1 style='color:white;margin:0;font-size:28px'>
-                        Velkommen til Treesy 🌱
-                    </h1>
-                </div>
+     <div style='background:linear-gradient(135deg,#065f46,#10b981);
+                 padding:40px 32px;text-align:center'>
+         <h1 style='color:white;margin:0;font-size:28px'>
+             Velkommen til Treesy 🌱
+         </h1>
+     </div>
 
-                <div style='padding:32px'>
-                    <p style='font-size:16px;color:#374151;line-height:1.6'>
-                        Hej {name},
-                    </p>
-                    <p style='font-size:16px;color:#374151;line-height:1.6'>
-                        Tak fordi du er blevet en del af Treesy. Din konto er nu oprettet 
-                        og klar til brug.
-                    </p>
-                    <p style='font-size:16px;color:#374151;line-height:1.6'>
-                        Dine træer plantes i to omgange om året — omkring regnsæsonerne 
-                        i Tanzania.
-                    </p>
+     <div style='padding:32px'>
+         <p style='font-size:16px;color:#374151;line-height:1.6'>
+             Hej {name},
+         </p>
+         <p style='font-size:16px;color:#374151;line-height:1.6'>
+             Tak fordi du er blevet en del af Treesy. Din konto er nu oprettet 
+             og klar til brug.
+         </p>
+         <p style='font-size:16px;color:#374151;line-height:1.6'>
+             Dine træer plantes i to omgange om året — omkring regnsæsonerne 
+             i Tanzania.
+         </p>
 
-                    <div style='text-align:center;margin:32px 0'>
-                        <a href='https://treesy.dk/dashboard'
-                           style='background:linear-gradient(135deg,#10b981,#065f46);
-                                  color:white;padding:14px 32px;border-radius:50px;
-                                  text-decoration:none;font-weight:700;font-size:15px;
-                                  display:inline-block'>
-                            Se dit dashboard →
-                        </a>
-                    </div>
+         <div style='text-align:center;margin:32px 0'>
+             <a href='https://treesy.dk/dashboard'
+                style='background:linear-gradient(135deg,#10b981,#065f46);
+                       color:white;padding:14px 32px;border-radius:50px;
+                       text-decoration:none;font-weight:700;font-size:15px;
+                       display:inline-block'>
+                 Se dit dashboard →
+             </a>
+         </div>
 
-                    <p style='font-size:13px;color:#9ca3af;text-align:center;
-                               margin-top:32px;border-top:1px solid #f3f4f6;padding-top:20px'>
-                        Treesy · Bæredygtighed der virker
-                    </p>
-                </div>
-            </div>";
+         <p style='font-size:13px;color:#9ca3af;text-align:center;
+                    margin-top:32px;border-top:1px solid #f3f4f6;padding-top:20px'>
+             Treesy · Bæredygtighed der virker
+         </p>
+     </div>
+ </div>";
+
 
             await SendAsync(toEmail, name, "Velkommen til Treesy 🌱", html);
         }
@@ -209,11 +210,19 @@ namespace treesy_backend.Services
 
         // ── Privat hjælpemetode ──────────────────────────────────────────────
         private async Task SendAsync(
+
             string toEmail,
             string toName,
             string subject,
             string htmlContent)
         {
+
+            //Debug
+            Console.WriteLine("Email method called");
+            Console.WriteLine("API key: " + _config["SendGrid:APIKey"]);
+            Console.WriteLine("From email: " + _config["SendGrid:FromEmail"]);
+            Console.WriteLine("To Email: " + toEmail);
+
             var apiKey = _config["SendGrid:ApiKey"];
             var fromEmail = _config["SendGrid:FromEmail"];
             var fromName = _config["SendGrid:FromName"];

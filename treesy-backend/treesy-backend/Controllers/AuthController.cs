@@ -63,6 +63,9 @@ namespace Treesy.Api.Controllers
             _db.Customers.Add(customer);
             await _db.SaveChangesAsync();
 
+            // Send velkomstmail (kan ske asynkront uden await, da vi ikke behøver at vente på det)
+            _ = _email.SendWelcomeEmailAsync(customer.Email, customer.Name ?? customer.Email);
+
             var token = GenerateToken(customer);
             return Ok(new { token, email = customer.Email, name = customer.Name });
         }
