@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"; //javaScript import-sætning, der importerer useEffect og useState hooks fra React-biblioteket. Disse hooks bruges til at håndtere sideeffekter og komponentens tilstand i funktionelle komponenter.
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
-import "../styles/Dashboard.css"; // Sørg for at have passende styles for dashboardet
+import "../styles/Dashboard.css";
 
 function fmt(n) {
   return Number(n).toLocaleString("da-DK");
@@ -17,8 +17,12 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Hent dashboard-data ved indlæsning af siden. setData indeholder info om kunden, abonnement og gemmer stats
-  //når komponent starter henter den data fra backend, og sender token med i header for at autentificere. Hvis det lykkes, gemmes data i state og loading sættes til false. Hvis der er en fejl, gemmes fejlbesked i state og loading sættes til false.
+  // states til annulleringsflow ─────────────────────────
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelDone, setCancelDone] = useState(false);
+  
+
   useEffect(() => {
     if (!user?.token) return;
     fetch("http://localhost:5106/api/dashboard", {
@@ -32,9 +36,6 @@ export default function DashboardPage() {
       .catch((err) => { setError(err.message); setLoading(false); });
   }, [user]);
 
-  //javascript. dette useeffect håndterer oprettelsen af et CO2-chart ved hjælp af Chart.js biblioteket.
-  //Når data ændres, forsøger det at finde et canvas-element med id "db-co2-chart". Hvis det findes og Chart.js er tilgængeligt, opretter det et line chart med CO2-dataen. 
-  // Hvis der allerede er et chart, ødelægges det først for at undgå overlap. Hvis Chart.js ikke er indlæst, tilføjes et script-tag til dokumentet for at indlæse det fra CDN, og når det er indlæst, tegnes chartet. Når komponenten unmountes eller data ændres, ødelægges chartet for at rydde op.
   useEffect(() => {
     if (!data?.co2Timeline?.length) return;
 
@@ -103,7 +104,6 @@ export default function DashboardPage() {
       });
     };
 
-
     if (window.Chart) {
       draw();
       return () => { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } };
@@ -128,7 +128,34 @@ export default function DashboardPage() {
     logout();
     navigate("/");
   }
-//jsx er html lignende syntaks der bruges i React til at beskrive UI-komponenter. I dette tilfælde returnerer funktionen forskellige JSX-strukturer baseret på applikationens tilstand (loading, error, eller visning af dashboard-data). Hver struktur inkluderer en Navbar og forskellige divs med klasser og indhold, der viser brugerens information, abonnement, stats, og transaktioner. Der er også en logout-knap, der kalder handleLogout-funktionen ved klik.
+
+  // funktion der kalder POST /api/subscription/cancel for at annullere abonnementet
+  async function handleCancelSubscription() {
+    setCancelling(true);
+    try {
+      const res = await fetch("http://localhost:5106/api/subscription/cancel", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "Noget gik galt");
+
+      setCancelDone(true);
+      setShowCancelConfirm(false);
+
+      // Opdater abonnementsstatus lokalt så UI reagerer med det samme
+      setData(prev => ({
+        ...prev,
+        subscription: { ...prev.subscription, status: "cancelled" }
+      }));
+    } catch (err) {
+      alert("Fejl: " + err.message);
+    } finally {
+      setCancelling(false);
+    }
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   if (loading) {
     return (
       <>
@@ -295,6 +322,84 @@ export default function DashboardPage() {
               ))}
             </div>
           )}
+
+          {/*  Annulleringssektion — vises kun hvis status er "active" ── */}
+          {subscription?.status === "active" && (
+            <div className="db-card" style={{ borderTop: "2px solid #fee2e2" }}>
+              <div className="db-card-header">
+                <h3 className="db-card-title" style={{ color: "#991b1b" }}>
+                  Annuller abonnement
+                </h3>
+              </div>
+
+              <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 16 }}>
+                Hvis du annullerer, beholder du adgang frem til{" "}
+                <strong>{subscription.currentPeriodEnd}</strong>. Ingen fremtidige
+                betalinger vil blive trukket.
+              </p>
+
+              {/* Vis succes-besked efter annullering */}
+              {cancelDone ? (
+                <div style={{
+                  background: "#f0fdf4", border: "1px solid #86efac",
+                  borderRadius: 12, padding: 16, color: "#065f46", fontWeight: 600
+                }}>
+                  ✅ Dit abonnement er annulleret. Du har adgang til{" "}
+                  {subscription.currentPeriodEnd}. Du har fået en bekræftelse på mail.
+                </div>
+
+              /* Vis knap — klik åbner bekræftelsesdialog */
+              ) : !showCancelConfirm ? (
+                <button
+                  onClick={() => setShowCancelConfirm(true)}
+                  style={{
+                    background: "transparent", border: "1px solid #ef4444",
+                    color: "#ef4444", padding: "10px 20px", borderRadius: 8,
+                    cursor: "pointer", fontWeight: 600, fontSize: "0.9rem"
+                  }}
+                >
+                  Annuller abonnement
+                </button>
+
+              /* Vis bekræftelsesdialog med Ja/Fortryd */
+              ) : (
+                <div style={{
+                  background: "#fef2f2", border: "1px solid #fca5a5",
+                  borderRadius: 12, padding: 20
+                }}>
+                  <p style={{ fontWeight: 600, color: "#991b1b", marginBottom: 12 }}>
+                    Er du sikker? Dit abonnement stopper efter{" "}
+                    {subscription.currentPeriodEnd}.
+                  </p>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button
+                      onClick={handleCancelSubscription}
+                      disabled={cancelling}
+                      style={{
+                        flex: 1, background: "#ef4444", color: "white",
+                        border: "none", padding: "10px 0", borderRadius: 8,
+                        cursor: cancelling ? "not-allowed" : "pointer",
+                        fontWeight: 600, opacity: cancelling ? 0.7 : 1
+                      }}
+                    >
+                      {cancelling ? "Annullerer..." : "Ja, annuller"}
+                    </button>
+                    <button
+                      onClick={() => setShowCancelConfirm(false)}
+                      style={{
+                        flex: 1, background: "#e5e7eb", color: "#374151",
+                        border: "none", padding: "10px 0", borderRadius: 8,
+                        cursor: "pointer", fontWeight: 600
+                      }}
+                    >
+                      Fortryd
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        
 
           <button className="db-logout" onClick={handleLogout}>Log ud</button>
         </div>
