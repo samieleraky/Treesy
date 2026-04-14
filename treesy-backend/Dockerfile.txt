@@ -1,19 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Kopier projektfil
 COPY ["treesy-backend.csproj", "."]
 RUN dotnet restore "treesy-backend.csproj"
 
-# Kopier resten og byg
 COPY . .
 RUN dotnet publish "treesy-backend.csproj" -c Release -o /app/publish
 
-# Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "treesy-backend.dll"]
