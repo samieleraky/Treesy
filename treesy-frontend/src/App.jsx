@@ -13,9 +13,9 @@ import Contact from "./pages/Contact.jsx";
 import ErhvervsPage from "./pages/ErhvervsPage.jsx";
 import SuccessPage from "./pages/SuccessPage.jsx";
 import CancelPage from "./pages/CancelPage.jsx";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/Protectedroute";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from "./pages/Dashboardpage";
 
 function App() {
     
