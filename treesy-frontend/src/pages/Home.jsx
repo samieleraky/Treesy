@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState, useRef } from "react";
 import '../styles/styles.css';
 import {Link} from "react-router-dom";
+import API_BASE_URL from '../config';
 
 // ── Static content (skifter aldrig — hører ikke hjemme i API) ─
 const STEPS = [
@@ -25,7 +26,7 @@ export default function Home() {
 
   // Hent prisdata fra backend
   useEffect(() => {
-    fetch("http://localhost:5106/api/plans")
+    fetch(`${API_BASE_URL}/api/plans`)
       .then((res) => {
         if (!res.ok) throw new Error("Kunne ikke hente abonnementer");
         return res.json();
@@ -251,7 +252,7 @@ function PricingCard({ plan, yearly }) {
 
   const handleCheckout = async () => { console.log("plan.id:", plan.id);
     try {
-        const res = await fetch("http://localhost:5106/api/payments/create-checkout-session", {
+        const res = await fetch(`${API_BASE_URL}/api/payments/create-checkout-session`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
