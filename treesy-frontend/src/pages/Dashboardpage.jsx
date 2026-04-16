@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
+import API_BASE_URL from '../config';
 
 function fmt(n) {
   return Number(n).toLocaleString("da-DK");
@@ -25,7 +26,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!user?.token) return;
-    fetch("http://localhost:5106/api/dashboard", {
+    fetch(`${API_BASE_URL}/api/dashboard`, {
       headers: { Authorization: `Bearer ${user.token}` },
     })
       .then((res) => {
@@ -133,7 +134,7 @@ export default function DashboardPage() {
   async function handleCancelSubscription() {
     setCancelling(true);
     try {
-      const res = await fetch("http://localhost:5106/api/subscription/cancel", {
+      const res = await fetch(`${API_BASE_URL}/api/subscription/cancel`, {
         method: "POST",
         headers: { Authorization: `Bearer ${user.token}` },
       });

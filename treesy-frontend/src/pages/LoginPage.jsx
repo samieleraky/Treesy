@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/Login.css"; // Sørg for at have passende styles for login-siden
+import API_BASE_URL from '../config'; // Tilføj denne linje for at importere API_BASE_URL
+
+
 
 export default function LoginPage() {
   const [tab, setTab] = useState("login");
@@ -27,7 +30,7 @@ export default function LoginPage() {
 
     if (needsPassword) {
       try {
-        const res = await fetch("http://localhost:5106/api/Auth/set-password", {
+        const res = await fetch(`${API_BASE_URL}/api/Auth/set-password`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password, name }),
@@ -45,8 +48,8 @@ export default function LoginPage() {
     }
 
     const endpoint = tab === "login"
-      ? "http://localhost:5106/api/Auth/login"
-      : "http://localhost:5106/api/Auth/register";
+        ? `${API_BASE_URL}/api/Auth/login`
+  : `${API_BASE_URL}/api/Auth/register`;
 
     const body = tab === "login"
       ? { email, password }
