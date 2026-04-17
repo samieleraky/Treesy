@@ -2,11 +2,14 @@ import React from 'react';
 import '../styles/styles.css';
 import {useEffect} from "react";
 import { useLocation } from 'react-router-dom';
+import API_BASE_URL from '../config';
 
+// Konfigurer API_BASE_URL i en separat fil (config.js) og importér den her
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5106';
 
 const handleSeedCheckout = async (planId) => {
   try {
-    const res = await fetch("http://localhost:5106/api/payments/create-checkout-session", {
+    const res = await fetch(`${API_BASE_URL}/api/payments/create-checkout-session`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
