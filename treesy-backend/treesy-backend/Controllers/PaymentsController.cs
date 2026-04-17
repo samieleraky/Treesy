@@ -31,28 +31,27 @@ namespace Treesy.Api.Controllers
 
             var mode = request.Billing == "onetime" ? "payment" : "subscription";
 
+            // HENT FRONTEND URL FRA ENVIRONMENT VARIABLE
+            var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:5173";
+
             var options = new SessionCreateOptions
             {
                 Mode = mode,
-
-                // ✅ FIXED URL
-                SuccessUrl = "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
-                CancelUrl = "http://localhost:5173/cancel",
-
+                SuccessUrl = $"{frontendUrl}/success?session_id={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{frontendUrl}/cancel",
                 Metadata = new Dictionary<string, string>
-                {
-                    { "planId", request.PlanId },
-                    { "billing", request.Billing }
-                },
-
+        {
+            { "planId", request.PlanId },
+            { "billing", request.Billing }
+        },
                 LineItems = new List<SessionLineItemOptions>
-                {
-                    new SessionLineItemOptions
-                    {
-                        Price = priceId,
-                        Quantity = 1
-                    }
-                }
+        {
+            new SessionLineItemOptions
+            {
+                Price = priceId,
+                Quantity = 1
+            }
+        }
             };
 
             var service = new SessionService();
