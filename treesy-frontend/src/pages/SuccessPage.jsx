@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import Navbar from "../components/Navbar"; // ← tilpas stien hvis nødvendigt
+import API_BASE_URL from "../config";
+
+
 
 const STYLES = `
   @keyframes fadeUp {
@@ -46,10 +50,7 @@ const STYLES = `
     margin: 0 auto 28px;
     animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
   }
-  .suc-icon-wrap svg {
-    width: 44px;
-    height: 44px;
-  }
+  .suc-icon-wrap svg { width: 44px; height: 44px; }
   .suc-check {
     stroke-dasharray: 60;
     stroke-dashoffset: 60;
@@ -106,8 +107,6 @@ const STYLES = `
     text-decoration: none;
     box-shadow: 0 6px 20px rgba(16,185,129,0.3);
     transition: all 0.25s ease;
-    border: none;
-    cursor: pointer;
   }
   .suc-btn-primary:hover {
     transform: translateY(-2px);
@@ -124,25 +123,7 @@ const STYLES = `
     border: 2px solid #10b981;
     transition: all 0.25s ease;
   }
-  .suc-btn-ghost:hover {
-    background: #f0fdf4;
-  }
-  .suc-nav-band {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    background: white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    display: flex;
-    align-items: center;
-    padding: 0 32px;
-    z-index: 100;
-  }
-  .suc-nav-logo {
-    height: 36px;
-  }
+  .suc-btn-ghost:hover { background: #f0fdf4; }
   @media (max-width: 560px) {
     .suc-card { padding: 40px 24px; }
     .suc-title { font-size: 1.6rem; }
@@ -151,19 +132,26 @@ const STYLES = `
   }
 `;
 
+const PLAN_LABELS = {
+  "active-planter":         "Active Planter — 130 træer/år",
+  "committed-planter":      "Committed Planter — 260 træer/år",
+  "hero-planter":           "Hero Planter — 1.300 træer/år",
+  "legend-planter":         "Legend Planter — 13.000 træer/år",
+  "active-planter-seed":    "Active Planter — 130 Seed Credits",
+  "committed-planter-seed": "Committed Planter — 260 Seed Credits",
+  "hero-planter-seed":      "Hero Planter — 1.300 Seed Credits",
+  "legend-planter-seed":    "Legend Planter — 13.000 Seed Credits",
+};
+
+const BILLING_LABELS = {
+  monthly: "Månedligt abonnement",
+  yearly:  "Årligt abonnement",
+  onetime: "Engangskøb",
+};
+
 export default function SuccessPage() {
   const [searchParams] = useSearchParams();
   const [details, setDetails] = useState(null);
-
-  useEffect(() => {
-    const sessionId = searchParams.get("session_id");
-    if (!sessionId) return;
-
-    fetch(`http://localhost:5106/api/payments/verify-session?sessionId=${sessionId}`)
-      .then((res) => res.json())
-      .then((data) => setDetails(data))
-      .catch((err) => console.error("Verification failed:", err));
-  }, [searchParams]);
 
   useEffect(() => {
     const id = "suc-styles";
@@ -175,39 +163,20 @@ export default function SuccessPage() {
     }
   }, []);
 
-  const planLabels = {
-    "active-planter":         "Active Planter — 130 træer/år",
-    "committed-planter":      "Committed Planter — 260 træer/år",
-    "hero-planter":           "Hero Planter — 1.300 træer/år",
-    "legend-planter":         "Legend Planter — 13.000 træer/år",
-    "active-planter-seed":    "Active Planter — 130 Seed Credits",
-    "committed-planter-seed": "Committed Planter — 260 Seed Credits",
-    "hero-planter-seed":      "Hero Planter — 1.300 Seed Credits",
-    "legend-planter-seed":    "Legend Planter — 13.000 Seed Credits",
-  };
-
-  const billingLabel = {
-    monthly: "Månedligt abonnement",
-    yearly:  "Årligt abonnement",
-    onetime: "Engangskøb",
-  };
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    if (!sessionId) return;
+    fetch(`${API_BASE_URL}/api/payments/verify-session?sessionId=${sessionId}`)
+      .then((res) => res.json())
+      .then((data) => setDetails(data))
+      .catch((err) => console.error("Verification failed:", err));
+  }, [searchParams]);
 
   return (
     <>
-      {/* Solid navbar — kun på denne side */}
-      <nav className="suc-nav-band">
-        <Link to="/">
-          <img
-            src="/B2-transparent-bg.png"
-            alt="Treesy"
-            className="suc-nav-logo"
-          />
-        </Link>
-      </nav>*
-
+      <Navbar forceScrolled={true} />
       <div className="suc-page">
         <div className="suc-card">
-          {/* Animeret checkmark */}
           <div className="suc-icon-wrap">
             <svg viewBox="0 0 44 44" fill="none">
               <circle cx="22" cy="22" r="20" fill="#dcfce7" stroke="#10b981" strokeWidth="1.5"/>
@@ -228,7 +197,6 @@ export default function SuccessPage() {
             en kvittering på mail.
           </p>
 
-          {/* Vis detaljer hvis vi har dem fra verify-session */}
           {details && (
             <div className="suc-details">
               {details.email && (
@@ -241,7 +209,7 @@ export default function SuccessPage() {
                 <div className="suc-detail-row">
                   <span className="suc-detail-label">Pakke</span>
                   <span className="suc-detail-value">
-                    {planLabels[details.planId] ?? details.planId}
+                    {PLAN_LABELS[details.planId] ?? details.planId}
                   </span>
                 </div>
               )}
@@ -249,7 +217,7 @@ export default function SuccessPage() {
                 <div className="suc-detail-row">
                   <span className="suc-detail-label">Fakturering</span>
                   <span className="suc-detail-value">
-                    {billingLabel[details.billing] ?? details.billing}
+                    {BILLING_LABELS[details.billing] ?? details.billing}
                   </span>
                 </div>
               )}

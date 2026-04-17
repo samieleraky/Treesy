@@ -1,5 +1,6 @@
 ﻿import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import API_BASE_URL from "../config"; // Tilføj denne linje for at importere API_BASE_URL
 
 export default function Checkout() {
     const { planId } = useParams();
@@ -9,7 +10,7 @@ export default function Checkout() {
     const [billing, setBilling] = useState("monthly"); // monthly | yearly
 
     useEffect(() => {
-        fetch("http://localhost:5106/api/plans")
+        fetch(`${API_BASE_URL}/api/plans`)
             .then(res => res.json())
             .then(data => {
                 const selectedPlan = data.find(p => p.id === planId);
@@ -29,7 +30,7 @@ export default function Checkout() {
                     : plan.yearlyPrice;
 
             const response = await fetch(
-                "http://localhost:5106/api/payments/create-checkout-session", 
+                `${API_BASE_URL}/api/payments/create-checkout-session`, 
                 {
                     method: "POST",
                     headers: {
