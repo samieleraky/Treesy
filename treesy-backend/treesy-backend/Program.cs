@@ -43,16 +43,17 @@ builder.Services.AddDbContext<TreesyDbContext>(options =>
 //Stripe
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-//Cors
+//Cors er nødvendigt for at tillade frontend-applikationen at kommunikere med backend, især hvis de kører på forskellige domæner eller porte.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
             policy
-                .AllowAnyOrigin()
+            .WithOrigins("https://treesy-sami.vercel.app", "http://localhost:5173")
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+            .AllowCredentials(); // Tillad cookies/credentials
         });
 });
 
