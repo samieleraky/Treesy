@@ -38,18 +38,22 @@ builder.Services.AddSwaggerGen();
 //database connection i supabase. 
 builder.Services.AddDbContext<TreesyDbContext>(options =>
 {
-    var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var dbUrl = builder.Configuration["DATABASE_URL"]
+                ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+
+    if (string.IsNullOrEmpty(dbUrl))
+        throw new Exception("DATABASE_URL er ikke sat!");
 
     string connectionString;
-    if (dbUrl != null && dbUrl.StartsWith("postgresql://"))
+    if (dbUrl.StartsWith("postgresql://") || dbUrl.StartsWith("postgres://"))
     {
         var uri = new Uri(dbUrl);
         var userInfo = uri.UserInfo.Split(':');
-        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={Uri.UnescapeDataString(userInfo[1])};SSL Mode=Require;Trust Server Certificate=true";
     }
     else
     {
-        connectionString = dbUrl ?? "";
+        connectionString = dbUrl;
     }
 
     options.UseNpgsql(connectionString);
