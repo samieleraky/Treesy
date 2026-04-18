@@ -35,10 +35,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//database connection i supabase. 
 builder.Services.AddDbContext<TreesyDbContext>(options =>
-    options.UseNpgsql(
-        "Host=localhost;Port=5432;Database=treesy_db;Username=postgres;Password=Sami12345"
-    ));
+{
+    var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    options.UseNpgsql(dbUrl);
+});
 
 //Stripe
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
