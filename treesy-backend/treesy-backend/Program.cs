@@ -39,7 +39,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TreesyDbContext>(options =>
 {
     var dbUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    options.UseNpgsql(dbUrl);
+
+    string connectionString;
+    if (dbUrl != null && dbUrl.StartsWith("postgresql://"))
+    {
+        var uri = new Uri(dbUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    }
+    else
+    {
+        connectionString = dbUrl ?? "";
+    }
+
+    options.UseNpgsql(connectionString);
 });
 
 //Stripe
