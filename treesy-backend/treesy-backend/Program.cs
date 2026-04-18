@@ -43,13 +43,12 @@ builder.Services.AddDbContext<TreesyDbContext>(options =>
 //Stripe
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-// CORS - Allow all (TIL TEST)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("https://treesy-sami.vercel.app")
                   .AllowAnyMethod()
                   .AllowAnyHeader();
         });
