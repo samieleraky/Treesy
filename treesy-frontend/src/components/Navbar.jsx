@@ -45,6 +45,7 @@ export default function Navbar({ forceScrolled = false }) {
           <Link to="/disclaimer" onClick={() => setMenuOpen(false)}>Disclaimer & FAQ</Link>
           <Link to="/erhverv" onClick={() => setMenuOpen(false)}>Erhverv</Link>
           <Link to="/kontakt" onClick={() => setMenuOpen(false)}>Kontakt</Link>
+          <Link to="/login" className="ts-login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
         </div>
       )}
     </nav>
