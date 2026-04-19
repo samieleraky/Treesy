@@ -41,7 +41,7 @@ namespace treesy_backend.Services
          </p>
 
          <div style='text-align:center;margin:32px 0'>
-             <a href='https://treesy.dk/dashboard'
+             <a href='https://treesy-sami.vercel.app/dashboard'
                 style='background:linear-gradient(135deg,#10b981,#065f46);
                        color:white;padding:14px 32px;border-radius:50px;
                        text-decoration:none;font-weight:700;font-size:15px;
@@ -129,7 +129,7 @@ namespace treesy_backend.Services
                     </table>
 
                     <div style='text-align:center;margin:32px 0'>
-                        <a href='https://treesy.dk/dashboard'
+                        <a href='https://treesy-sami.vercel.app/dashboard'
                            style='background:linear-gradient(135deg,#10b981,#065f46);
                                   color:white;padding:14px 32px;border-radius:50px;
                                   text-decoration:none;font-weight:700;font-size:15px;
