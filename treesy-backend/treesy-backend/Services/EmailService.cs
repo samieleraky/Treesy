@@ -185,7 +185,7 @@ namespace treesy_backend.Services
                     </div>
 
                     <p style='font-size:16px;color:#374151;line-height:1.6'>
-                        Fortryder du? Du kan altid genstarte dit abonnement fra dit dashboard.
+                        Fortryder du? Du kan altid tilkøbe dig en af vores abonnementpakker, eller en af vores enkelte pakker gennem vores hjemmeside.
                     </p>
 
                     <div style='text-align:center;margin:32px 0'>
