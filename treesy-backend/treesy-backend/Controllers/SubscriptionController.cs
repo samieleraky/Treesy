@@ -52,6 +52,7 @@ namespace Treesy.Api.Controllers
             });
 
             // Opdater i database
+            activeSub.Status = "cancelled";  // ← tilføj denne linje
             activeSub.CancelledAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
 
