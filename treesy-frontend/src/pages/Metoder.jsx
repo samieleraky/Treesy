@@ -126,7 +126,7 @@ export default function Metoder() {
 
 {/* VIDEO */}
 <section className="ts-section">
-  <div className="ts-container ts-container-narrow">
+  <div className="ts-container">
    
     <div className="ts-video-wrapper">
       <iframe
