@@ -1,3 +1,6 @@
+import React from "react";
+import '../styles/styles.css';
+
 export default function Metoder() {
   return (
     <div className="ts-page">
@@ -124,10 +127,7 @@ export default function Metoder() {
 {/* VIDEO */}
 <section className="ts-section">
   <div className="ts-container ts-container-narrow">
-    <h2 className="ts-section-title" style={{ textAlign: "center" }}>
-      Se hvordan vi arbejder i praksis
-    </h2>
-
+   
     <div className="ts-video-wrapper">
       <iframe
         src="https://www.youtube.com/embed/m4P17KAVl1Y"
