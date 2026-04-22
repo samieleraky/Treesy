@@ -121,17 +121,21 @@ export default function Metoder() {
         </div>
       </section>
 
-
+{/* VIDEO */}
 <section className="ts-section">
   <div className="ts-container ts-container-narrow">
+    <h2 className="ts-section-title" style={{ textAlign: "center" }}>
+      Se hvordan vi arbejder i praksis
+    </h2>
+
     <div className="ts-video-wrapper">
       <iframe
-      src="https://www.youtube.com/watch?v=m4P17KAVl1Y"
-      title="Træplantning i Tanzania"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    ></iframe>
+        src="https://www.youtube.com/embed/m4P17KAVl1Y"
+        title="Treesy metode video"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
     </div>
   </div>
 </section>
