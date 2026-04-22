@@ -121,6 +121,22 @@ export default function Metoder() {
         </div>
       </section>
 
+
+<section className="ts-section">
+  <div className="ts-container ts-container-narrow">
+    <div className="ts-video-wrapper">
+      <iframe
+      src="https://www.youtube.com/watch?v=m4P17KAVl1Y"
+      title="Træplantning i Tanzania"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    ></iframe>
+    </div>
+  </div>
+</section>
+      
+
       {/* SPECIES */}
     <section className="ts-section ts-section-gray">
         <div className="ts-container">
