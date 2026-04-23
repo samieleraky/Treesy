@@ -697,22 +697,7 @@
   margin: 0.5rem 0 1.2rem;
 }
 
-/*.ts-list li {
-  position: relative;
-  padding-left: 28px;
-  margin-bottom: 8px;
-  font-size: 1.05rem;
-  color: var(--text-mid);
-  line-height: 1.7;
-}
 
-.ts-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: var(--green-mid);
-  font-weight: 800;
-}*/
 
 
 
@@ -978,7 +963,7 @@
 
 .ts-list li {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 8px; /* 🔥 styrer afstand mellem ✓ og tekst */
   margin-bottom: 6px;
   color: var(--text-mid);
@@ -990,6 +975,8 @@
   color: var(--green-mid);
   font-weight: 800;
   flex-shrink: 0;
+  line-height: 1.6;     /* ← matcher li's line-height */
+  margin-top: 0;        /* ← nulstiller evt. forskydning */
 }
 
 
@@ -1322,7 +1309,6 @@
   margin: 0 auto;
   padding: 0 24px;
 }
-
 
 
 /* ============================================================
