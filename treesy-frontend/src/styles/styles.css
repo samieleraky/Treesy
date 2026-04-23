@@ -1329,11 +1329,24 @@
    Video section - Metoder
    ============================================================ */
 .ts-section-video {
-  padding: 0;
+  padding: 0 !important;
+  margin: 0;
+  line-height: 0; /* Fjerner ekstra plads under iframe */
 }
 
 .ts-video-wrapper {
+  position: relative;
   width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  left: 50%;
+  transform: translateX(-50%);
+  padding-bottom: 56.25%;
+  margin: 0;
   border-radius: 0;
+}
+
+.ts-video-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
