@@ -1323,3 +1323,17 @@
   padding: 0 24px;
 }
 
+
+
+/* ============================================================
+   Video section - Metoder
+   ============================================================ */
+.ts-section-video {
+  padding: 0;
+}
+
+.ts-video-wrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  border-radius: 0;
+}
