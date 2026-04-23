@@ -125,18 +125,15 @@ export default function Metoder() {
       </section>
 
 {/* VIDEO */}
-<section className="ts-section">
-  <div className="ts-container">
-   
-    <div className="ts-video-wrapper">
-      <iframe
-        src="https://www.youtube.com/embed/m4P17KAVl1Y"
-        title="Treesy metode video"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
-    </div>
+<section className="ts-section ts-section-video">
+  <div className="ts-video-wrapper">
+    <iframe
+      src="https://www.youtube.com/embed/m4P17KAVl1Y"
+      title="Treesy metode video"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    ></iframe>
   </div>
 </section>
       
