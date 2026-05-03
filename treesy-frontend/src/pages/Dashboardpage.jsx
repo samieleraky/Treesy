@@ -12,32 +12,6 @@ function fmt(n) {
 
 let chartInstance = null;
 
-// Simpel TreeMap komponent der viser træer som emoji-grid
-function TreeMap({ trees }) {
-  if (!trees || trees.length === 0) {
-    return (
-      <p style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
-        Ingen træer registreret endnu — dine træer tilføjes når de er plantet.
-      </p>
-    );
-  }
-
-  return (
-    <div>
-      <p style={{ color: "#6b7280", fontSize: "0.85rem", marginBottom: 12 }}>
-        {trees.length} træer registreret
-      </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-        {trees.map((tree, i) => (
-          <span key={i} title={`Plantet: ${new Date(tree.plantedAt).toLocaleDateString("da-DK")}`} style={{ fontSize: 20 }}>
-            🌳
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
