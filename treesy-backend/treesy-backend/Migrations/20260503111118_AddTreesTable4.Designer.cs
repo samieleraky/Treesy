@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using treesy_backend.Data;
@@ -11,9 +12,11 @@ using treesy_backend.Data;
 namespace treesy_backend.Migrations
 {
     [DbContext(typeof(TreesyDbContext))]
-    partial class TreesyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260503111118_AddTreesTable4")]
+    partial class AddTreesTable4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

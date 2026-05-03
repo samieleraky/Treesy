@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace treesy_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPostgres : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -81,6 +81,27 @@ namespace treesy_backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Trees",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    PlantedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Trees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Trees_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_Email",
                 table: "Customers",
@@ -114,6 +135,11 @@ namespace treesy_backend.Migrations
                 table: "Subscriptions",
                 column: "StripeSubscriptionId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trees_CustomerId",
+                table: "Trees",
+                column: "CustomerId");
         }
 
         /// <inheritdoc />
@@ -124,6 +150,9 @@ namespace treesy_backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Trees");
 
             migrationBuilder.DropTable(
                 name: "Customers");

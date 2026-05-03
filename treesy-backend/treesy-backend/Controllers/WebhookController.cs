@@ -65,6 +65,8 @@ namespace Treesy.Api.Controllers
                 // ✅ FIX 2: Brug planId og billing HER (de er nu defineret)
                 var planName = FormatPlanName(planId);
                 var trees = GetTreesForPlan(planId);
+                var treeCount = trees;
+                var random = new Random();
 
                 try
                 {
@@ -105,7 +107,21 @@ namespace Treesy.Api.Controllers
                             CreatedAt = DateTime.UtcNow
                         };
                         _db.Subscriptions.Add(subscription);
-                        customer.TotalTreesPlanted += GetTreesForPlan(planId);
+                        customer.TotalTreesPlanted += treeCount;
+
+                        // 🌳 Opret individuelle træer
+                        for (int i = 0; i < treeCount; i++)
+                        {
+                            var tree = new Tree
+                            {
+                                CustomerId = customer.Id,
+                                Latitude = -6.79 + random.NextDouble() * 0.1,
+                                Longitude = 39.20 + random.NextDouble() * 0.1,
+                                PlantedAt = DateTime.UtcNow
+                            };
+
+                            _db.Trees.Add(tree);
+                        }
                         Console.WriteLine($"✅ Subscription added: {subscription.PlanId}");
                     }
                     else if (mode == "payment")
@@ -122,7 +138,21 @@ namespace Treesy.Api.Controllers
                             CreatedAt = DateTime.UtcNow
                         };
                         _db.Orders.Add(order);
-                        customer.TotalTreesPlanted += GetTreesForPlan(planId);
+                        customer.TotalTreesPlanted += treeCount;
+
+                        // 🌳 Opret individuelle træer
+                        for (int i = 0; i < treeCount; i++)
+                        {
+                            var tree = new Tree
+                            {
+                                CustomerId = customer.Id,
+                                Latitude = -6.79 + random.NextDouble() * 0.1,
+                                Longitude = 39.20 + random.NextDouble() * 0.1,
+                                PlantedAt = DateTime.UtcNow
+                            };
+
+                            _db.Trees.Add(tree);
+                        }
                         Console.WriteLine($"✅ Order added: {order.PlanId}, Amount: {order.AmountDkk}");
                     }
 

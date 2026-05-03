@@ -12,6 +12,7 @@ namespace treesy_backend.Data
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet <Tree> Trees => Set<Tree>();
 
         protected override void OnModelCreating(ModelBuilder b)
         {

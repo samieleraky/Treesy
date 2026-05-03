@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
 import API_BASE_URL from '../config';
+import TreeMap from "../components/TreeMap";
 
 function fmt(n) {
   return Number(n).toLocaleString("da-DK");
@@ -11,18 +12,42 @@ function fmt(n) {
 
 let chartInstance = null;
 
+// Simpel TreeMap komponent der viser træer som emoji-grid
+function TreeMap({ trees }) {
+  if (!trees || trees.length === 0) {
+    return (
+      <p style={{ color: "#9ca3af", fontSize: "0.9rem" }}>
+        Ingen træer registreret endnu — dine træer tilføjes når de er plantet.
+      </p>
+    );
+  }
+
+  return (
+    <div>
+      <p style={{ color: "#6b7280", fontSize: "0.85rem", marginBottom: 12 }}>
+        {trees.length} træer registreret
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+        {trees.map((tree, i) => (
+          <span key={i} title={`Plantet: ${new Date(tree.plantedAt).toLocaleDateString("da-DK")}`} style={{ fontSize: 20 }}>
+            🌳
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // states til annulleringsflow ─────────────────────────
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelDone, setCancelDone] = useState(false);
-  
+  const [trees, setTrees] = useState([]);
 
   useEffect(() => {
     if (!user?.token) return;
@@ -35,6 +60,17 @@ export default function DashboardPage() {
       })
       .then((d) => { setData(d); setLoading(false); })
       .catch((err) => { setError(err.message); setLoading(false); });
+  }, [user]);
+
+  // ← Rettet: tjekker user?.token og har user som dependency
+  useEffect(() => {
+    if (!user?.token) return;
+    fetch(`${API_BASE_URL}/api/trees`, {
+      headers: { Authorization: `Bearer ${user.token}` },
+    })
+      .then((res) => res.json())
+      .then((d) => setTrees(d))
+      .catch(() => setTrees([]));
   }, [user]);
 
   useEffect(() => {
@@ -130,7 +166,6 @@ export default function DashboardPage() {
     navigate("/");
   }
 
-  // funktion der kalder POST /api/subscription/cancel for at annullere abonnementet
   async function handleCancelSubscription() {
     setCancelling(true);
     try {
@@ -143,8 +178,6 @@ export default function DashboardPage() {
 
       setCancelDone(true);
       setShowCancelConfirm(false);
-
-      // Opdater abonnementsstatus lokalt så UI reagerer med det samme
       setData(prev => ({
         ...prev,
         subscription: { ...prev.subscription, status: "cancelled" }
@@ -155,7 +188,6 @@ export default function DashboardPage() {
       setCancelling(false);
     }
   }
-  // ──────────────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -208,6 +240,7 @@ export default function DashboardPage() {
       <Navbar forceScrolled={true} />
       <div className="db-page">
         <div className="db-wrap">
+
           <div className="db-hero">
             <div className="db-hero-top">
               <div>
@@ -272,6 +305,14 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* 🌳 TRÆER */}
+          <div className="db-card">
+            <div className="db-card-header">
+              <h3 className="db-card-title">Dine træer 🌳</h3>
+            </div>
+            <TreeMap trees={trees} />
+          </div>
+
           <div className="db-sub-info">
             <span>
               <strong>{subscription.planName}</strong> — {subscription.billing === "yearly" ? "Årlig" : "Månedlig"} · Status: {subscription.status}
@@ -324,7 +365,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/*  Annulleringssektion — vises kun hvis status er "active" ── */}
           {subscription?.status === "active" && (
             <div className="db-card" style={{ borderTop: "2px solid #fee2e2" }}>
               <div className="db-card-header">
@@ -332,14 +372,11 @@ export default function DashboardPage() {
                   Annuller abonnement
                 </h3>
               </div>
-
               <p style={{ fontSize: "0.9rem", color: "#6b7280", marginBottom: 16 }}>
                 Hvis du annullerer, beholder du adgang frem til{" "}
                 <strong>{subscription.currentPeriodEnd}</strong>. Ingen fremtidige
                 betalinger vil blive trukket.
               </p>
-
-              {/* Vis succes-besked efter annullering */}
               {cancelDone ? (
                 <div style={{
                   background: "#f0fdf4", border: "1px solid #86efac",
@@ -348,8 +385,6 @@ export default function DashboardPage() {
                   ✅ Dit abonnement er annulleret. Du har adgang til{" "}
                   {subscription.currentPeriodEnd}. Du har fået en bekræftelse på mail.
                 </div>
-
-              /* Vis knap — klik åbner bekræftelsesdialog */
               ) : !showCancelConfirm ? (
                 <button
                   onClick={() => setShowCancelConfirm(true)}
@@ -361,8 +396,6 @@ export default function DashboardPage() {
                 >
                   Annuller abonnement
                 </button>
-
-              /* Vis bekræftelsesdialog med Ja/Fortryd */
               ) : (
                 <div style={{
                   background: "#fef2f2", border: "1px solid #fca5a5",
@@ -400,7 +433,6 @@ export default function DashboardPage() {
               )}
             </div>
           )}
-        
 
           <button className="db-logout" onClick={handleLogout}>Log ud</button>
         </div>

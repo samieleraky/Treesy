@@ -12,8 +12,8 @@ using treesy_backend.Data;
 namespace treesy_backend.Migrations
 {
     [DbContext(typeof(TreesyDbContext))]
-    [Migration("20260408120119_InitialPostgres")]
-    partial class InitialPostgres
+    [Migration("20260503104313_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,31 @@ namespace treesy_backend.Migrations
                     b.ToTable("Subscriptions");
                 });
 
+            modelBuilder.Entity("treesy_backend.Models.Tree", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("PlantedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Trees");
+                });
+
             modelBuilder.Entity("treesy_backend.Models.Order", b =>
                 {
                     b.HasOne("treesy_backend.Models.Customer", "Customer")
@@ -175,6 +200,17 @@ namespace treesy_backend.Migrations
                 {
                     b.HasOne("treesy_backend.Models.Customer", "Customer")
                         .WithMany("Subscriptions")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("treesy_backend.Models.Tree", b =>
+                {
+                    b.HasOne("treesy_backend.Models.Customer", "Customer")
+                        .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
