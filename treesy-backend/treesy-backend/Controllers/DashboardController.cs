@@ -4,15 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 using treesy_backend.Data;
-
-
+using treesy_backend.Helpers;
 
 namespace Treesy.Api.Controllers
 {
-    [ApiController] //Den tillader at klassen fungerer som en API-controller, hvilket betyder, at den kan håndtere HTTP-anmodninger og returnere HTTP-responser.
-    [Route("api/[controller]")] //Definerer ruten for controlleren. "controller" er en placeholder, der automatisk erstattes med navnet på controlleren (uden "Controller"-suffikset). I dette tilfælde vil ruten være "api/dashboard".
-    [Authorize] //Angiver, at alle handlinger i denne controller kræver, at brugeren er autentificeret. Det betyder, at kun brugere, der har logget ind og har en gyldig token, kan få adgang til disse endpoints.
-
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
     public class DashboardController : ControllerBase
     {
         private readonly TreesyDbContext _db;
@@ -25,7 +23,6 @@ namespace Treesy.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDashboard()
         {
-            //Hent bruger-ID fra token
             var customerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (customerIdStr == null || !Guid.TryParse(customerIdStr, out var customerId))
                 return Unauthorized();
@@ -38,37 +35,25 @@ namespace Treesy.Api.Controllers
             if (customer == null)
                 return NotFound();
 
-            //Aktivt abonnemt
             var activeSub = customer.Subscriptions
                 .Where(s => s.Status == "active")
                 .OrderByDescending(s => s.CreatedAt)
                 .FirstOrDefault();
 
-            //Plan navn
+            // ← Bruger nu PlanHelper i stedet for lokal switch
+            var planName = PlanHelper.FormatPlanName(activeSub?.PlanId ?? "");
 
-            var planName = activeSub?.PlanId switch
-            {
-                "active-planter" => "Active Planter",
-                "committed-planter" => "Committed Planter",
-                "hero-planter" => "Hero Planter",
-                "legend-planter" => "Legend Planter",
-                _ => activeSub?.PlanId ?? "Ingen aktiv pakke"
-            };
+            // ← Bruger nu PlanHelper i stedet for lokal metode
+            var treesPerYear = PlanHelper.GetTreesForPlan(activeSub?.PlanId ?? "");
 
-            // Træer pr. år baseret på plan
-            var treesPerYear = GetTreesForPlan(activeSub?.PlanId ?? "");
-
-            // CO2 og areal
             var co2Kg = treesPerYear * 100;
             var areaM2 = treesPerYear * 10;
             var footballPitches = Math.Round(areaM2 / 7140.0, 2);
 
-            // Måneder aktiv
             var monthsActive = activeSub?.CreatedAt != null
                 ? (int)Math.Floor((DateTime.UtcNow - activeSub.CreatedAt.Value).TotalDays / 30.44)
                 : 0;
 
-            // CO2 over tid (én datapunkt per måned siden opstart)
             var co2Timeline = new List<object>();
             if (activeSub?.CreatedAt != null)
             {
@@ -88,23 +73,24 @@ namespace Treesy.Api.Controllers
                 }
             }
 
-            // Seneste transaktioner — både abonnementer og orders
+            // ← Bruger nu PlanHelper.FormatPlanName i stedet for lokal metode
             var recentOrders = customer.Orders
-     .Select(o => new
-     {
-         id = o.Id,
-         description = FormatPlanName(o.PlanId) + " — engangskøb",
-         date = o.CreatedAt,
-         amount = (int)o.AmountDkk,
-         status = o.Status
-     });
+                .Select(o => new
+                {
+                    id = o.Id,
+                    description = PlanHelper.FormatPlanName(o.PlanId) + " — engangskøb",
+                    date = o.CreatedAt,
+                    amount = (int)o.AmountDkk,
+                    status = o.Status
+                });
 
+            // ← Bruger nu PlanHelper.FormatPlanName i stedet for lokal metode
             var recentSubs = customer.Subscriptions
                 .Select(s => new
                 {
                     id = s.Id,
-                    description = FormatPlanName(s.PlanId) + " — " + (s.Billing == "yearly" ? "årlig" : "månedlig"),
-                    date = s.CreatedAt ?? DateTime.MinValue, // 🔥 FIX
+                    description = PlanHelper.FormatPlanName(s.PlanId) + " — " + (s.Billing == "yearly" ? "årlig" : "månedlig"),
+                    date = s.CreatedAt ?? DateTime.MinValue,
                     amount = GetMonthlyPrice(s.PlanId, s.Billing),
                     status = s.Status
                 });
@@ -145,24 +131,7 @@ namespace Treesy.Api.Controllers
             });
         }
 
-        private static int GetTreesForPlan(string planId) => planId switch
-        {
-            "active-planter" => 130,
-            "committed-planter" => 260,
-            "hero-planter" => 1300,
-            "legend-planter" => 13000,
-            _ => 0
-        };
-
-        private static string FormatPlanName(string planId) => planId switch
-        {
-            "active-planter" or "active-planter-seed" => "Active Planter",
-            "committed-planter" or "committed-planter-seed" => "Committed Planter",
-            "hero-planter" or "hero-planter-seed" => "Hero Planter",
-            "legend-planter" or "legend-planter-seed" => "Legend Planter",
-            _ => planId
-        };
-
+        // ← Denne er BEHOLDT da den kun findes her
         private static int GetMonthlyPrice(string planId, string billing) =>
             (planId, billing) switch
             {
@@ -176,9 +145,7 @@ namespace Treesy.Api.Controllers
                 ("legend-planter", "yearly") => 95000,
                 _ => 0
             };
+
+        // ← GetTreesForPlan og FormatPlanName er SLETTET — de lever nu i PlanHelper
     }
-
-
-  
-
 }

@@ -14,6 +14,7 @@ namespace treesy_backend.Data
         public DbSet<Order> Orders => Set<Order>();
         public DbSet <Tree> Trees => Set<Tree>();
 
+        // OnModelCreating is used to configure the model (tables, relationships, indexes, etc.) using the Fluent API
         protected override void OnModelCreating(ModelBuilder b)
         {
             b.Entity<Customer>().HasIndex(c => c.StripeCustomerId).IsUnique();

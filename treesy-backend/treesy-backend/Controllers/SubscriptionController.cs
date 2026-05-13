@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Stripe;
 using treesy_backend.Data;
 using treesy_backend.Services;
+using treesy_backend.Helpers;
 
 namespace Treesy.Api.Controllers
 {
@@ -57,14 +58,8 @@ namespace Treesy.Api.Controllers
             await _db.SaveChangesAsync();
 
             // Send annulleringsmail
-            var planName = activeSub.PlanId switch
-            {
-                "active-planter" => "Active Planter",
-                "committed-planter" => "Committed Planter",
-                "hero-planter" => "Hero Planter",
-                "legend-planter" => "Legend Planter",
-                _ => activeSub.PlanId
-            };
+            var planName = PlanHelper.FormatPlanName(activeSub.PlanId);
+            
 
             _ = _email.SendCancellationEmailAsync(
                 customer.Email,

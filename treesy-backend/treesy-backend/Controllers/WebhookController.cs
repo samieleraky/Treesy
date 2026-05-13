@@ -4,6 +4,7 @@ using Stripe.Checkout;
 using treesy_backend.Data;
 using treesy_backend.Models;
 using treesy_backend.Services;
+using treesy_backend.Helpers;
 
 namespace Treesy.Api.Controllers
 {
@@ -63,8 +64,8 @@ namespace Treesy.Api.Controllers
                 }
 
                 // ✅ FIX 2: Brug planId og billing HER (de er nu defineret)
-                var planName = FormatPlanName(planId);
-                var trees = GetTreesForPlan(planId);
+                var planName = PlanHelper.FormatPlanName(planId);
+                var trees = PlanHelper.GetTreesForPlan(planId);
                 var treeCount = trees;
                 var random = new Random();
 
@@ -132,7 +133,7 @@ namespace Treesy.Api.Controllers
                             CustomerId = customer.Id,
                             StripeSessionId = session!.Id,
                             PlanId = planId,
-                            Trees = GetTreesForPlan(planId),
+                            Trees = PlanHelper.GetTreesForPlan(planId),
                             AmountDkk = (session.AmountTotal ?? 0) / 100m,
                             Status = "paid",
                             CreatedAt = DateTime.UtcNow
@@ -198,26 +199,6 @@ namespace Treesy.Api.Controllers
             return Ok();
         }
 
-        // ✅ FIX 4: Tilføj den manglende FormatPlanName funktion
-        private static string FormatPlanName(string planId)
-        {
-            return planId switch
-            {
-                "active-planter" or "active-planter-seed" => "Active Planter",
-                "committed-planter" or "committed-planter-seed" => "Committed Planter",
-                "hero-planter" or "hero-planter-seed" => "Hero Planter",
-                "legend-planter" or "legend-planter-seed" => "Legend Planter",
-                _ => planId // Hvis ukendt, returnér originalt navn
-            };
-        }
-
-        private static int GetTreesForPlan(string planId) => planId switch
-        {
-            "active-planter" or "active-planter-seed" => 130,
-            "committed-planter" or "committed-planter-seed" => 260,
-            "hero-planter" or "hero-planter-seed" => 1300,
-            "legend-planter" or "legend-planter-seed" => 13000,
-            _ => 0
-        };
+       
     }
 }
