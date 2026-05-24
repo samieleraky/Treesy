@@ -24,28 +24,39 @@ export default function DashboardPage() {
   const [trees, setTrees] = useState([]);
 
   useEffect(() => {
-    if (!user?.token) return;
-    fetch(`${API_BASE_URL}/api/dashboard`, {
-      headers: { Authorization: `Bearer ${user.token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Kunne ikke hente dashboard");
-        return res.json();
-      })
-      .then((d) => { setData(d); setLoading(false); })
-      .catch((err) => { setError(err.message); setLoading(false); });
-  }, [user]);
+  console.log("🧠 USER OBJECT:", user);
+  console.log("🔑 TOKEN:", user?.token);
 
-  // ← Rettet: tjekker user?.token og har user som dependency
-  useEffect(() => {
-    if (!user?.token) return;
-    fetch(`${API_BASE_URL}/api/trees`, {
-      headers: { Authorization: `Bearer ${user.token}` },
+  if (!user?.token) {
+    console.log("⛔ No token → stopping request");
+    return;
+  }
+
+  fetch(`${API_BASE_URL}/api/trees`, {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  })
+    .then(async (res) => {
+      console.log("📡 RESPONSE STATUS:", res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.log("❌ ERROR RESPONSE BODY:", errorText);
+        throw new Error(errorText || "Request failed");
+      }
+
+      return res.json();
     })
-      .then((res) => res.json())
-      .then((d) => setTrees(d))
-      .catch(() => setTrees([]));
-  }, [user]);
+    .then((data) => {
+      console.log("🌳 TREES DATA:", data);
+      setTrees(data);
+    })
+    .catch((err) => {
+      console.error("💥 FETCH ERROR:", err);
+      setTrees([]);
+    });
+}, [user]);
 
   useEffect(() => {
     if (!data?.co2Timeline?.length) return;
