@@ -40,10 +40,9 @@ namespace Treesy.Api.Controllers
                 .OrderByDescending(s => s.CreatedAt)
                 .FirstOrDefault();
 
-            // ← Bruger nu PlanHelper i stedet for lokal switch
+            // PlanHelper bruges nu til at formatere plan-navnet i stedet for lokal metode
             var planName = PlanHelper.FormatPlanName(activeSub?.PlanId ?? "");
 
-            // ← Bruger nu PlanHelper i stedet for lokal metode
             var treesPerYear = PlanHelper.GetTreesForPlan(activeSub?.PlanId ?? "");
 
             var co2Kg = treesPerYear * 100;
