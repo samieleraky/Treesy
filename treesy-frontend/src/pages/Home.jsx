@@ -21,7 +21,7 @@ export default function Home() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [yearly, setYearly] = useState(false);
+  const [yearly, setYearly] = useState(false); // månedlig er default
   const pricingRef = useRef(null);
 
   // Hent prisdata fra backend
@@ -50,7 +50,7 @@ export default function Home() {
       {/* ── HERO ── */}
       <section
         className="ts-hero"
-        style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Pakker-hero-scaled.webp')" }}
+        style={{ backgroundImage: "url('https://www.treesy.dk/marketing/home-hero.webp')" }}
       >
         <div className="ts-hero-content">
           <h1>Gør det nemt, billigt og gennemskueligt</h1>
@@ -97,7 +97,7 @@ export default function Home() {
       {/* ── IMAGE SECTION ── */}
       <section
         className="ts-img-section"
-        style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Pakker-b-section-1.webp')" }}
+        style={{ backgroundImage: "url('https://www.treesy.dk/marketing/home-impact.webp')" }}
       >
         <div className="ts-container">
           <h2>Gennemskuelig træplantning</h2>
