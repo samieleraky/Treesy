@@ -78,7 +78,7 @@ const ErhvervsPage = () => {
       <section 
         className="ts-img-section" 
         style={{ 
-          backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Erhverv-hero-b-section-1.webp')" 
+          backgroundImage: "url('https://www.treesy.dk/marketing/business-impact.webp')" 
         }}
       >
         <div className="ts-container">
@@ -162,7 +162,7 @@ const ErhvervsPage = () => {
       <section 
         className="ts-img-section" 
         style={{ 
-          backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Erhverv-b-section-2.webp')" 
+          backgroundImage: "url('https://www.treesy.dk/marketing/business-transparency.webp')" 
         }}
       >
         <div className="ts-container">
@@ -221,7 +221,7 @@ const ErhvervsPage = () => {
       <section 
         className="ts-img-section" 
         style={{ 
-          backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Erhverv-b-section-3.webp')" 
+          backgroundImage: "url('https://www.treesy.dk/marketing/business-scale.webp')" 
         }}
       >
         <div className="ts-container">

@@ -10,7 +10,7 @@ export default function Metoder() {
         className="ts-hero"
         style={{
           backgroundImage:
-            "url('https://www.treesy.dk/wp-content/uploads/2026/03/Metoder-hero.webp')",
+            "url('https://www.treesy.dk/marketing/methods-hero.webp')",
         }}
       >
         <div className="ts-hero-content">
@@ -71,7 +71,7 @@ export default function Metoder() {
         className="ts-img-section"
         style={{
           backgroundImage:
-            "url('https://www.treesy.dk/wp-content/uploads/2026/03/Metoder-b-section-1-1.webp')",
+            "url('https://www.treesy.dk/marketing/methods-forest-systems.webp')",
         }}
       >
         <div className="ts-container">
@@ -225,7 +225,7 @@ export default function Metoder() {
         className="ts-img-section"
         style={{
           backgroundImage:
-            "url('https://www.treesy.dk/wp-content/uploads/2026/03/Metoder-b-section-2.webp')",
+            "url('https://www.treesy.dk/marketing/methods-geotagging.webp')",
         }}
       >
         <div className="ts-container">
@@ -328,7 +328,6 @@ export default function Metoder() {
       </section>
 
       {/* CALC */}
-      <section className="ts-section"> </section>
      <section className="ts-section">
         <div className="ts-container ts-container-narrow">
           <h2 className="ts-section-title" style={{ textAlign: "center" }}>

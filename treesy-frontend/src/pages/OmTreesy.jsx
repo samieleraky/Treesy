@@ -8,7 +8,7 @@ export default function OmTreesy() {
       {/* HERO */}
 <section
   className="ts-hero"
-  style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Om-treesy-hero.webp')" }}
+  style={{ backgroundImage: "url('https://www.treesy.dk/marketing/about-hero.webp')" }}
 >
   <div className="ts-hero-content">
     <h1>Om Treesy</h1>
@@ -30,7 +30,7 @@ export default function OmTreesy() {
       </section>
 
       {/* BILLEDE 1 */}
-      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Om-treesy-b-section-1.webp')" }}>
+      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/marketing/about-planet.webp')" }}>
         <div className="ts-container">
           
             <h2>At give mere tilbage til planeten</h2>
@@ -54,7 +54,7 @@ export default function OmTreesy() {
       </section>
 
       {/* BILLEDE 2 */}
-      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Om-treesy-b-section-2.webp')" }}>
+      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/marketing/about-founder.webp')" }}>
         <div className="ts-container">
         
             <h2>Charlie Uldahl Christensen</h2>
@@ -78,7 +78,7 @@ export default function OmTreesy() {
       </section>
 
       {/* BILLEDE 3 */}
-      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Om-treesy-b-section-3.webp')" }}>
+      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/marketing/about-leadership.webp')" }}>
         <div className="ts-container">
           
             <h2>Lokalt lederskab i centrum</h2>
@@ -109,7 +109,7 @@ export default function OmTreesy() {
       </section>
 
       {/* BILLEDE 4 */}
-      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/wp-content/uploads/2026/03/Om-treesy-b-section-4.webp')" }}>
+      <section className="ts-img-section" style={{ backgroundImage: "url('https://www.treesy.dk/marketing/about-transparency.webp')" }}>
         <div className="ts-container">
           
             <h2>Gennemsigtighed frem for greenwashing</h2>
