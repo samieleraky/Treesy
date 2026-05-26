@@ -11,7 +11,7 @@ export default function Kontakt() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.navn || !form.email || !form.besked) return;
-    // Her kan du kalde din WordPress REST API / CF7 endpoint
+   
     setSuccess(true);
     setForm({ navn: "", email: "", besked: "" });
   };
@@ -24,7 +24,7 @@ export default function Kontakt() {
         className="ts-hero"
         style={{
           backgroundImage:
-            "url('https://www.treesy.dk/wp-content/uploads/2026/03/Kontakt-Treesy.webp')",
+            "url('https://www.treesy.dk/marketing/business-scale.webp')",
           minHeight: "60vh",
         }}
       >
