@@ -21,7 +21,7 @@ namespace Treesy.Api.Controllers
         }
 
         [HttpGet] //HTTP GET endpoint for at hente dashboard-data
-        public async Task<IActionResult> GetDashboard() //asynkron metode som håndterer GET-anmodninger til dashboardet, liste IActionResult for at kunne returnere forskellige HTTP-responser
+        public async Task<IActionResult> GetDashboard() //GetDashbord metode er asynkron metode som håndterer GET-anmodninger til dashboardet, liste IActionResult for at kunne returnere forskellige HTTP-responser
         {
             var customerIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier); //Henter kundens ID fra JWT-tokenet ved hjælp af ClaimTypes.NameIdentifier, som vi tidligere har sat til at være customer.Id i auth processen. Gemmer det som en string. 
             if (customerIdStr == null || !Guid.TryParse(customerIdStr, out var customerId)) //hvis customerIdStr er null eller ikke kan parses til en Guid, returneres Unauthorized (401)

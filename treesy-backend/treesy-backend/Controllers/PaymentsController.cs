@@ -6,23 +6,23 @@ namespace Treesy.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PaymentsController : ControllerBase
+    public class PaymentsController : ControllerBase //paymentcontroller som håndterer oprettelse af checkout session og verifikation af session
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _config; //injecter IConfiguration for at kunne hente environment variables (f.eks. frontend URL)
 
-        public PaymentsController(IConfiguration config)
+        public PaymentsController(IConfiguration config) //metode som initialiserer IConfiguration i controlleren, så vi kan bruge den i vores metoder
         {
             _config = config;
         }
 
         // 🔹 1. CREATE CHECKOUT SESSION
-        [HttpPost("create-checkout-session")]
-        public IActionResult CreateCheckoutSession([FromBody] CheckoutRequest request)
+        [HttpPost("create-checkout-session")] //post-metode som opretter en checkout session i Stripe, baseret på den planId og billing type som frontend sender med i request body. Returnerer URL til Stripe checkout page.
+        public IActionResult CreateCheckoutSession([FromBody] CheckoutRequest request) //Metode som modtager en CheckoutRequest (som indeholder planId, billing og email) og opretter en Stripe checkout session baseret på disse oplysninger. Returnerer URL til Stripe checkout page.
         {
-            Console.WriteLine($"Modtaget planId: '{request.PlanId}'");
-            Console.WriteLine($"Modtaget billing: '{request.Billing}'");
+            Console.WriteLine($"Modtaget planId: '{request.PlanId}'"); //log for at se hvilken planId der modtages fra frontend
+            Console.WriteLine($"Modtaget billing: '{request.Billing}'"); //log for at se hvilken billing type der modtages fra frontend 
 
-            var priceId = GetStripePriceId(request.PlanId, request.Billing);
+            var priceId = GetStripePriceId(request.PlanId, request.Billing); //jeg erklærer en variable priceId som tager værdien returneret fra GetStripePriceId metoden, som mapper planId og billing til en Stripe priceId. Denne priceId bruges senere til at oprette checkout session i Stripe.
 
             Console.WriteLine($"PriceId fundet: {priceId ?? "NULL"}");
 
