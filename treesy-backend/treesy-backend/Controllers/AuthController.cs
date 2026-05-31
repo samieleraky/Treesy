@@ -31,7 +31,7 @@ namespace Treesy.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request) //Frombody bruges af ASP.NET core til automatisk at binde JSON-data fra request body til RegisterRequest objektet, så vi nemt kan arbejde med det i koden
         {
-            var emailLower = request.Email.Trim().ToLower(); // Jeg gemmer request.Email i en lokal variabel emailLower, hvor jeg både trim'er og lowercaser den. Det gør jeg for at sikre, at emailen bliver gemt i en standardiseret form i databasen, så vi undgår problemer med store/små bogstaver eller utilsigtede mellemrum, når vi senere skal tjekke om en email allerede findes eller når brugeren logger ind.
+            var emailLower = request.Email.Trim().ToLower(); //Jeg gemmer request.Email i en lokal variabel emailLower, hvor jeg både trim'er og lowercaser den. Det gør jeg for at sikre, at emailen bliver gemt i en standardiseret form i databasen, så vi undgår problemer med store/små bogstaver eller utilsigtede mellemrum, når vi senere skal tjekke om en email allerede findes eller når brugeren logger ind.
 
             var existing = await _db.Customers // først tjekker jeg om der allerede findes en kunde med den email i databasen. Det gør jeg ved at bruge Entity Frameworks LINQ-metode FirstOrDefaultAsync, som returnerer den første kunde der matcher betingelsen (c.Email == emailLower) eller null hvis ingen kunder matcher. Jeg bruger emailLower her for at sikre, at tjekket er case-insensitive og ignorerer mellemrum.
                 .FirstOrDefaultAsync(c => c.Email == emailLower); //c => c.Email == emailLower er en linq query som EF core oversætter til en SQL query der tjekker om der findes en række i Customers tabellen hvor Email kolonnen matcher emailLower variablen
@@ -132,12 +132,13 @@ namespace Treesy.Api.Controllers
         //metode som tager customer som parameter og genererer et JWT token baseret på kundens id, email og name. Tokenet signeres med en secret key fra appsettings.json og har en udløbstid på 30 dage. Frontend kan gemme dette token og sende det i Authorization headeren for at få adgang til beskyttede endpoints.
         private string GenerateToken(Customer customer)
         {
-            var key = new SymmetricSecurityKey(
+            //SymmetricSecurityKey opretter en sikkerhedsnøgle som senere bruges til at singere tokenet 
+            var key = new SymmetricSecurityKey( 
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)
             );
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new[] // claims er de oplysninger vi vil inkludere i tokenet, som frontend senere kan læse og bruge. Vi inkluderer kundens id som NameIdentifier claim, email som Email claim, og name som en custom claim "name". Hvis name er null, bruger vi en tom string for at undgå problemer med null værdier i claims.
             {
                 new Claim(ClaimTypes.NameIdentifier, customer.Id.ToString()),
                 new Claim(ClaimTypes.Email, customer.Email),
@@ -156,20 +157,20 @@ namespace Treesy.Api.Controllers
         }
     }
 
-    public class RegisterRequest
+    public class RegisterRequest //klasse som bruges til at binde data fra register endpointet. Den indeholder de felter som frontend skal sende i JSON body når de kalder /api/auth/register endpointet for at oprette en ny bruger. Email og Password er påkrævede, mens Name er valgfrit.
     {
         public string Email { get; set; } = "";
         public string Password { get; set; } = "";
         public string? Name { get; set; }
     }
 
-    public class LoginRequest
+    public class LoginRequest //klasse som bruges til at binde data fra login endpointet. Den indeholder de felter som frontend skal sende i JSON body når de kalder /api/auth/login endpointet for at logge ind. Både Email og Password er påkrævede.
     {
         public string Email { get; set; } = "";
         public string Password { get; set; } = "";
     }
 
-    public class SetPasswordRequest
+    public class SetPasswordRequest //klasse som bruges til at binde data fra set-password endpointet. Den indeholder de felter som frontend skal sende i JSON body når de kalder /api/auth/set-password endpointet for at sætte et password for en bruger der er oprettet via Stripe webhook og derfor ikke har et password endnu. Email og Password er påkrævede, mens Name er valgfrit.
     {
         public string Email { get; set; } = "";
         public string Password { get; set; } = "";
