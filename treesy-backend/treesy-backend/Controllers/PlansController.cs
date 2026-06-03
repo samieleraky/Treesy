@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc; //namespace for ControllerBase, ApiController, Route, HttpGet, IActionResult. bruges til at udvikle API-controllers
 
 namespace Treesy.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PlansController : ControllerBase
+    [ApiController] //fortæller ASP.Net Core at denne klasse er en API-controller, hvilket betyder at den håndterer HTTP-anmodninger og returnerer data (typisk i JSON-format) i stedet for HTML-visninger
+    [Route("api/[controller]")] //jeg angiver ruten for denne controller. endpointet bliver "api/plans" fordi controllerens navn er "PlansController" (ASP.Net Core fjerner "Controller" fra navnet for at bestemme ruten)
+    public class PlansController : ControllerBase //Jeg opretter en controller klasser som nedarver fra Controllerbase, som giver adgang til metoder såsom OK() og BadRequest()
     {
-        [HttpGet]
-        public IActionResult GetPlans()
+        [HttpGet] //Jeg angiver at GetPlans kan kaldes via en HTTP-get 
+        public IActionResult GetPlans() //Jeg opretter en metode GetPlans som returnere en list over de abonnementer, systemet tilbyder. Systemet returnere en IActionResult som er en standard måde at returnere HTTP-responser i ASP.Net Core. Det kan være en succes (OK) eller en fejl (BadRequest) afhængigt af situationen
         {
-            var plans = new[]
+            var plans = new[] //jeg er klærer variablen plans som en array af objekter, hvor hver objekt repræsenterer et abonnement
             {
-                new {
-                    id = "active-planter",
+                new { //jeg erklærer et abonnement med id, name, subtitle, icon, featured, features, monthlyPrice, yearlyPrice, monthlyDetail og yearlyDetail
+                    id = "active-planter", //unikt id for abonnementet, bruges til at identificere det i systemet og i Stripe
                     name = "Active Planter",
                     subtitle = "130 træer / år",
                     icon = "🌱",
@@ -82,7 +82,7 @@ namespace Treesy.Api.Controllers
                 }
             };
 
-            return Ok(plans);
+            return Ok(plans); //jeg returnerer en HTTP 200 OK respons med plans dataene i JSON-format. Dette gør det muligt for frontend-applikationen at hente og vise disse abonnementer til brugerne
         }
     }
 }
