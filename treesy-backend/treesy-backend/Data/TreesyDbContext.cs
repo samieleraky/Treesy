@@ -9,7 +9,7 @@ namespace treesy_backend.Data
     {
         public TreesyDbContext(DbContextOptions<TreesyDbContext> options) : base(options) { }
 
-        public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<Customer> Customers => Set<Customer>(); //Customer klassen gemmes i Customers tabellen i databasen, Subscription klassen gemmes i Subscriptions tabellen osv.
         public DbSet<Subscription> Subscriptions => Set<Subscription>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet <Tree> Trees => Set<Tree>();
