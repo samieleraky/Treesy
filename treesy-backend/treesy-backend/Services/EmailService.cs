@@ -1,21 +1,21 @@
 ﻿using SendGrid;
-using SendGrid.Helpers.Mail;
+using SendGrid.Helpers.Mail; //Jeg importerer SendGrid og SendGrid.Helpers.Mail namespaces, som indeholder klasser og metoder til at oprette og sende emails ved hjælp af SendGrid's API. Disse namespaces giver mig adgang til klasser som SendGridClient, EmailAddress, MailHelper osv., som jeg bruger i min EmailService til at konstruere og sende emails.
 
 namespace treesy_backend.Services
 {
     public class EmailService
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _config; //Jeg erklærer en privat readonly variabel _config af typen IConfiguration, som bruges til at hente konfigurationsindstillinger (f.eks. SendGrid API-nøgle, afsender-email osv.) fra appsettings.json eller miljøvariabler. Dette gør det nemt at administrere og sikre følsomme oplysninger som API-nøgler uden at hardkode dem i koden.
 
-        public EmailService(IConfiguration config)
+        public EmailService(IConfiguration config) //Constructor for EmailService som tager en parameter af typen IConfiguration, som injiceres via dependency injection. 
         {
-            _config = config;
+            _config = config; // Jeg initialiserer _config variablen med den injicerede konfiguration, så jeg kan bruge den i mine metoder til at hente de nødvendige indstillinger for at sende emails.
         }
 
         // ── Velkomstmail ved kontooprettelse ──────────────────────────────────
-        public async Task SendWelcomeEmailAsync(string toEmail, string name)
+        public async Task SendWelcomeEmailAsync(string toEmail, string name) //Asynkron metode hvilket betyder at den kan udføre operationer, der tager tid (feks. API kald) uden at blokere hovedtråden. Den tager to parementere - toEmail som er modtagerens email adresse, og name som er modtagerens navn. Disse bruges til at personliggøre emailen og for at sende den til den rigtige modtager
         {
-            var html = $@"
+            var html = $@"               
  <div style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
              max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;
              overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)'>
@@ -58,12 +58,12 @@ namespace treesy_backend.Services
  </div>";
 
 
-            await SendAsync(toEmail, name, "Velkommen til Treesy 🌱", html);
+            await SendAsync(toEmail, name, "Velkommen til Treesy 🌱", html); //SendAsync metode som tager modtagerens email, navn, html som indeholder indholdet ovenover. Asynkron  
         }
 
         // ── Ordrebekræftelse ved betaling ────────────────────────────────────
-        public async Task SendOrderConfirmationAsync(
-            string toEmail,
+        public async Task SendOrderConfirmationAsync( //Task er en asynkron metode som ikke returnerer noget (void) og som udføre operationer som tager tid såsom API kald
+            string toEmail, //jeg tager flere parametre som input for at kunne personliggøre og specificere indholdet i ordrebekræftelsesmailen. toEmail er modtagerens email adresse, som bruges til at sende mailen til den rigtige person
             string name,
             string planName,
             string billing,
@@ -155,7 +155,7 @@ namespace treesy_backend.Services
             string planName,
             DateTime periodEnd)
         {
-            var periodEndText = periodEnd.ToString("d. MMMM yyyy");
+            var periodEndText = periodEnd.ToString("d. MMMM yyyy"); // jeg erklærer en variabel periodEndText som indeholder en formateret version af periodEnd daton. ToString konverterer DateTime objektet til en string, og "d. MMMM yyyy" formatet betyder at det vil blive vist som dag (d), fuldt månedsnavn (MMMM) og år (yyyy). For eksempel, hvis periodEnd er 15. august 2024, så vil periodEndText være "15. august 2024". Dette gør det nemt at inkludere en læsbar dato i annulleringsmailen, så kunden ved præcis hvornår deres adgang til tjenesten udløber efter annulleringen.
 
             var html = $@"
             <div style='font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
@@ -218,7 +218,7 @@ namespace treesy_backend.Services
         {
 
             //Debug
-            Console.WriteLine("Email method called");
+            Console.WriteLine("Email method called"); //Jeg har tilføjet flere Console.WriteLine statements for at logge vigtige oplysninger, når SendAsync metoden kaldes. Dette inkluderer modtagerens email, navn, emne for emailen, og de vigtigste SendGrid konfigurationsindstillinger (API-nøgle, afsender-email). Disse logs vil hjælpe mig med at debugge og sikre, at metoden modtager de korrekte input og at konfigurationen er korrekt, når jeg tester email-funktionaliteten.
             Console.WriteLine("API key: " + _config["SendGrid:APIKey"]);
             Console.WriteLine("From email: " + _config["SendGrid:FromEmail"]);
             Console.WriteLine("To Email: " + toEmail);
