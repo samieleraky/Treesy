@@ -6,7 +6,7 @@ using treesy_backend.Models;
 using treesy_backend.Services;
 using treesy_backend.Helpers;
 
-namespace Treesy.Api.Controllers
+namespace Treesy.Api.Controllers 
 {
     [ApiController] //Jeg fortæller ASP NET Core at der er en controllerklasse, som håndterer HTTP-anmodninger og returnerer data (typisk i JSON-format) i stedet for HTML-visninger
     [Route("api/stripe/webhook")] //route for controlleren. Stripe sender webhook anmodninger til endpointet "api/stripe/webhook".
@@ -63,7 +63,7 @@ namespace Treesy.Api.Controllers
                 }
 
                 // Jeg erklærer variabeler planName, trees og treeCount. planName og trees kaldes ved hjælpe af PlanHelper-klassen, som er en hjælpeklasse jeg har oprettet for at håndtere logik relateret til abonnementer og produkter. PlanName formaterer planId'et til et mere læsbart format, som jeg senere bruger i emailen til kunden. Trees henter antallet af træer der er knyttet til det købte abonnement eller produkt baseret på planId'et, 
-                var planName = PlanHelper.FormatPlanName(planId);
+                var planName = PlanHelper.FormatPlanName(planId); //jeg erklærer en variabel planName som kalder PlanHelper.FormatPlaneName metoden, som tager planId'et og formaterer det til et mere læsbart format. For eksempel, hvis planId er "active-planter-monthly", så kan FormatPlanName returnere "Active Planter Monthly". Dette gør det nemmere at inkludere planens navn i emailen til kunden og i loggene, så det er mere forståeligt for både mig og kunden.
                 var trees = PlanHelper.GetTreesForPlan(planId); // og treeCount gemmer dette antal for senere brug i databasen og emailen.
                 var treeCount = trees;
                 var random = new Random(); //jeg opretter en tilfædighedsgenerator
@@ -124,16 +124,16 @@ namespace Treesy.Api.Controllers
                         }
                         Console.WriteLine($"✅ Subscription added: {subscription.PlanId}"); //besked vises til brugeren om at abonnemtet er tilføjet, og viser hvilket planId der er knyttet til det købte abonnement eller produkt. Dette hjælper med at bekræfte i loggene, at abonnementet er blevet oprettet korrekt i databasen, og giver mig mulighed for at se hvilke abonnementer der bliver købt baseret på planId'et.
                     }
-                    else if (mode == "payment")
+                    else if (mode == "payment") //hvis checkout-session var et engangskøb (mode er payment).
                     {
-                        var order = new Order
+                        var order = new Order //Jeg erklærer en varabel order, som indeholder en instants af Order-klassen som repræsenterer en order i databasen
                         {
-                            Id = Guid.NewGuid(),
-                            CustomerId = customer.Id,
-                            StripeSessionId = session!.Id,
-                            PlanId = planId,
-                            Trees = PlanHelper.GetTreesForPlan(planId),
-                            AmountDkk = (session.AmountTotal ?? 0) / 100m,
+                            Id = Guid.NewGuid(), //jeg initialiserer objektets Id-property ved at tildele den en ny GUID genereret af Guid.NewGuid().
+                            CustomerId = customer.Id, //Jeg initialistere objektets CustomerId-property med det ID fra den kunde, som jeg enten har hentet fra databasen eller oprettet tidligere i koden. 
+                            StripeSessionId = session!.Id,//jeg initialiserer objektets StripeSessionId-property med det Session ID jeg hentede fra checkout-sessionen. Dette ID er unikt for sessionen i Stripe, og det kan være nyttigt at gemme det i databasen for at kunne knytte ordren i min database til den tilsvarende session i Stripe, hvilket kan hjælpe med fremtidige opdateringer eller support. Jeg bruger null-forsegling operator (!) for at fortælle compileren at session ikke er null på dette tidspunkt, da jeg allerede har tjekket det tidligere i koden.
+                            PlanId = planId, //jeg initialiserer objektets planId med planId jeg hentede fra sessions metadata. Dette fortæller mig hvilket abonnemt eller produkt kunden har købt
+                            Trees = PlanHelper.GetTreesForPlan(planId), //Jeg initialiserer objektets Trees property med det antal træer der er knyttet til det købte abonnement eller produkt, som jeg får ved at kalde PlanHelper.GetTreesForPlan(planId). Dette holder styr på hvor mange træer der er knyttet til denne ordre, og det kan bruges til at vise denne information i kundens profil eller dashboard, samt for at spore det samlede antal træer plantet gennem engangskøb.
+                            AmountDkk = (session.AmountTotal ?? 0) / 100m, //AmountDkk initialiseres med det totale beløb for sessionen, som jeg henter fra session.AmountTotal. Dette beløb er i øre, så jeg dividerer det med 100m for at konvertere det til kroner. Jeg bruger null-coalescing operator (??) for at sikre, at hvis AmountTotal er null, så sættes AmountDkk til 0 i stedet for at kaste en exception.
                             Status = "paid",
                             CreatedAt = DateTime.UtcNow
                         };
@@ -156,7 +156,7 @@ namespace Treesy.Api.Controllers
                         Console.WriteLine($"✅ Order added: {order.PlanId}, Amount: {order.AmountDkk}");
                     }
 
-                    customer.UpdatedAt = DateTime.UtcNow;
+                    customer.UpdatedAt = DateTime.UtcNow; //jeg initialiserer kundens UpdateAt property med det aktuelle tidspunkt i UTC for at registrere hvornår kunden sidst blev opdateret i databasen
                     await _db.SaveChangesAsync();
 
                     // ✅ FIX 3: Send email EFTER alt er gemt (flyttet ned!)
