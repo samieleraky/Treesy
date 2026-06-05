@@ -209,7 +209,7 @@ namespace treesy_backend.Services
         }
 
         // ── Privat hjælpemetode ──────────────────────────────────────────────
-        private async Task SendAsync(
+        private async Task SendAsync( //SendAsync metode som er en privat metode i EmailService klassen, hvilket betyder at den kun kan kaldes inden for denne klasse. Den er asynkron (async) og returnerer en Task, hvilket indikerer at den udfører operationer, der kan tage tid (f.eks. API-kald) uden at blokere hovedtråden. Denne metode tager fire parametre: toEmail (modtagerens emailadresse), toName (modtagerens navn), subject (emnet for emailen) og htmlContent (det HTML-indhold, der skal sendes i emailen). SendAsync metoden er ansvarlig for at oprette og sende emailen ved hjælp af SendGrid's API, og den håndterer også eventuelle fejl, der måtte opstå under processen.
 
             string toEmail,
             string toName,
@@ -223,23 +223,23 @@ namespace treesy_backend.Services
             Console.WriteLine("From email: " + _config["SendGrid:FromEmail"]);
             Console.WriteLine("To Email: " + toEmail);
 
-            var apiKey = _config["SendGrid:ApiKey"];
+            var apiKey = _config["SendGrid:ApiKey"]; // Jeg erklærer en variabel apiKey som henter SendGrid-konfiguration fra applikationens konfigurationssystem for at undgå hardcoding af følsomme oplysninger som API-nøgler og afsenderinformation.
             var fromEmail = _config["SendGrid:FromEmail"];
             var fromName = _config["SendGrid:FromName"];
 
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(fromEmail, fromName);
-            var to = new EmailAddress(toEmail, toName);
+            var client = new SendGridClient(apiKey); //Jeg erklærer en variabel client som er en ny instans af SendGridClient, og jeg passerer apiKey som parameter til constructoren. Dette opretter en klient, som jeg kan bruge til at interagere med SendGrid's API og sende emails.
+            var from = new EmailAddress(fromEmail, fromName); //Jeg erklærer en variabel from som er en ny instans af EmailAddress, og jeg passerer fromEmail og fromName som parametre. Dette repræsenterer afsenderens emailadresse og navn, som vil blive vist i den email, der sendes til modtageren. Det hjælper med at gøre emailen mere personlig og genkendelig for modtageren.
+            var to = new EmailAddress(toEmail, toName); // jeg erklærer en variabel to som er en ny instans af EmailAddress, og jeg passerer toEmail og toName som parametre. Dette repræsenterer modtagerens emailadresse og navn, som vil blive brugt til at sende emailen til den rigtige person og for at personliggøre emailen ved at inkludere modtagerens navn i indholdet.
 
-            var msg = MailHelper.CreateSingleEmail(
+            var msg = MailHelper.CreateSingleEmail( //Jeg erklærer en variabel msg som opretter en email ved hjælp af SendGrid´s MailHelper.CreateSingleEmail metode. Den indeholder følgende paremetere
                 from, to, subject,
                 plainTextContent: subject, // Fallback til plain text
                 htmlContent: htmlContent
             );
 
-            var response = await client.SendEmailAsync(msg);
+            var response = await client.SendEmailAsync(msg); //reponse er en ny instans af SendGrids Response objekt som indeholder information om resultatet af email sendingen. 
 
-            if (!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode) //hvis response ikke er en succes (dvs. statuskoden indikerer en fejl), så læser jeg bodyen af response for at få detaljer om fejlen og logger det til konsollen. Dette hjælper med at debugge og forstå, hvorfor emailen ikke blev sendt korrekt, ved at give indsigt i eventuelle problemer med SendGrid's API-kaldet.
             {
                 var body = await response.Body.ReadAsStringAsync();
                 Console.WriteLine($"❌ SendGrid fejl: {response.StatusCode} — {body}");
