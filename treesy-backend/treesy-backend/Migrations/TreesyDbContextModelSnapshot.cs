@@ -185,9 +185,9 @@ namespace treesy_backend.Migrations
             modelBuilder.Entity("treesy_backend.Models.Order", b =>
                 {
                     b.HasOne("treesy_backend.Models.Customer", "Customer")
-                        .WithMany("Orders")
+                        .WithMany("Orders") //en til mange relation mellem Order og Customer
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Cascade) //Hvis en Customer slettes, skal alle relaterede Orders også slettes (Cascade delete), og at CustomerId er påkrævet for hver Order (IsRequired)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -204,12 +204,12 @@ namespace treesy_backend.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("treesy_backend.Models.Tree", b =>
+            modelBuilder.Entity("treesy_backend.Models.Tree", b => //linq forespørgsel der om at konfigurere relationen mellem Tree og Customer entiteterne. 
                 {
                     b.HasOne("treesy_backend.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany() //Det specificerer at hver Tree har en reference til en Customer (CustomerId) og at hver Customer kan have mange Trees (en-til-mange relation)
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Cascade) // Det angiver også at når en Customer slettes, skal alle relaterede Trees også slettes (Cascade delete), og at CustomerId er påkrævet for hver Tree (IsRequired)
                         .IsRequired();
 
                     b.Navigation("Customer");
