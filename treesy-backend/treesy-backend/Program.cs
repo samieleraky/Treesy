@@ -53,7 +53,10 @@ builder.Services.AddCors(options => //Cors policy som tillader anmodninger fra f
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://treesy-sami.vercel.app")
+            policy.WithOrigins(
+                "https://treesy-sami.vercel.app",
+                "http://localhost:5173"
+                )
                   .AllowAnyMethod()
                   .AllowAnyHeader();
         });
