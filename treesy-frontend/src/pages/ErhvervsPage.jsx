@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import API_BASE_URL from '../config';
 
 // Konfigurer API_BASE_URL i en separat fil (config.js) og importér den her
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5106';
+//const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5106';
 
 const handleSeedCheckout = async (planId) => {
   try {
