@@ -72,21 +72,29 @@ namespace Treesy.Api.Controllers
         }
 
 
-        [HttpPost("login")] //end til login af bruger
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var customer = await _db.Customers // først finder vi kunden i databasen baseret på den email der blev sendt i login requestet. Vi trim'er og lowercaser emailen for at sikre at tjekket er case-insensitive og ignorerer mellemrum
-                .FirstOrDefaultAsync(c => c.Email == request.Email.Trim().ToLower());
+            if (request == null)
+                return BadRequest(new { message = "Request mangler" });
 
-            if (customer == null) //hvis kunden ikke findes returneres følgende besked
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest(new { message = "Email og password er påkrævet" });
+
+            var email = request.Email.Trim().ToLower();
+
+            var customer = await _db.Customers
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (customer == null)
                 return Unauthorized(new { message = "Forkert email eller kodeord" });
 
-            // Kunden eksisterer men har intet kodeord (oprettet via Stripe webhook)
             if (string.IsNullOrEmpty(customer.PasswordHash))
-                return Unauthorized(new { message = "no_password" }); // ← speciel kode til frontend som indikerer at brugeren skal sætte et password før de kan logge ind
+                return Unauthorized(new { message = "no_password" });
 
-            bool passwordValid; //verificering af password
-            try 
+            bool passwordValid = false;
+
+            try
             {
                 passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, customer.PasswordHash);
             }
@@ -95,10 +103,11 @@ namespace Treesy.Api.Controllers
                 return Unauthorized(new { message = "Forkert email eller kodeord" });
             }
 
-            if (!passwordValid) //hvis password ikke matcher å returneres følgende besked
+            if (!passwordValid)
                 return Unauthorized(new { message = "Forkert email eller kodeord" });
 
-            var token = GenerateToken(customer); // hvis login er succesfuldt genereres et JWT token for kunden, som frontend kan gemme og bruge til at autentificere fremtidige API kald
+            var token = GenerateToken(customer);
+
             return Ok(new { token, email = customer.Email, name = customer.Name });
         }
 
