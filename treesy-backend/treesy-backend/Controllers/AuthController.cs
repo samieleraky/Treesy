@@ -112,7 +112,7 @@ namespace Treesy.Api.Controllers
         }
 
 
-        [HttpPost("set-password")] //Denne endpoint kan bruges af brugere der er oprettet via Stripe webhook (som ikke har et password) til at sætte et password og dermed få adgang til at logge ind via email/password i stedet for kun via Stripe login. 
+        [HttpPost("set-password")] //Endpoint til brugere uden password (oprettet via stripe webhook). De kan sætte et password
         public async Task<IActionResult> SetPassword([FromBody] SetPasswordRequest request) //Den tager SetPasswordRequest som objekt der indeholder email, password og name (name er valgfrit og kan bruges til at sætte et navn for kunder der er oprettet via webhook og derfor ikke har et navn)
         {
             var customer = await _db.Customers //find customer i databasen baseret på emailen i requestet. Vi trim'er og lowercaser emailen for at sikre at tjekket er case-insensitive og ignorerer mellemrum

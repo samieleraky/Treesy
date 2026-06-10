@@ -25,7 +25,6 @@ function App() {
             <ScrollToTop /> {/* Sørger for at scrolle til toppen ved navigation */}
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/checkout/:planId" element={<Checkout />} />
                 <Route path="/om-treesy" element={<OmTreesy />} />
                 <Route path="/disclaimer" element={<Disclaimer/>} />
                 <Route path="/metoder" element={<Metoder />} />

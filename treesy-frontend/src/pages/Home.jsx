@@ -1,49 +1,52 @@
-﻿import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useState, useRef } from "react"; //importerer React hooks til state og lifecycle management
 import '../styles/styles.css';
-import {Link} from "react-router-dom";
-import API_BASE_URL from '../config';
+import {Link} from "react-router-dom"; //Link komponent til at erstatte <a> tags for intern navigation
+import API_BASE_URL from '../config'; //importerer API_Base_URL fra config.js for at bruge i fetch kald
 
-// ── Static content (skifter aldrig — hører ikke hjemme i API) ─
+// SÅDAN VIRKER DET - 3 ENKLE TRIN. Konstanter bruges til at holde data for STEPS og CALCULATIONS, som er statiske og ikke behøver at være i state. Det gør koden renere og mere effektiv.
+//React gennemløber Arrays i JSX og viser hver step og beregning i UI ved hjælp af map funktion. Det gør det nemt at ændre indholdet ved blot at opdatere disse konstanter.
 const STEPS = [
   { num: "1", title: "Vælg din pakke", desc: "Find den løsning, der matcher dit ambitionsniveau." },
   { num: "2", title: "Vi planter træerne for dig", desc: "Træerne plantes, passes og monitoreres med lokale partnere." },
   { num: "3", title: "Følg dit impact", desc: "Du får et login til vores platform, hvor du kan se præcis hvor dine træer står." },
 ];
 
+//HVORDAN REGNER VI? 
 const CALCULATIONS = [
   { icon: "📊", title: "13 tons CO₂", desc: "Gennemsnitlig dansker udleder 13 tons CO₂ / år" },
   { icon: "🌳", title: "100 kg CO₂", desc: "Ét træ lagrer konservativt 100 kg CO₂ over sin levetid" },
   { icon: "🎯", title: "130 træer", desc: "130 træer ≈ 13 tons CO₂ = carbon neutral" },
 ];
 
-// ── Main component ─────────────────────────────────────────────
+// Home componenten er hovedkomponenten for forsiden. Den håndterer state for prisplaner, loading og error, og indeholder alle sektionerne på forsiden, inklusiv hero, intro, steps, image section, beregninger, prisplaner og CTA. Den bruger useEffect til at hente prisplaner fra backend ved mount og til at scrolle til prisplan-sektionen hvis URL'en indeholder #pakker.
 export default function Home() {
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [plans, setPlans] = useState([]); // State bruges til data som kan ændre sig. Prisplaner hentet fra backend
+  const [loading, setLoading] = useState(true); // Loading state for prisplaner
+  const [error, setError] = useState(null); // Error state for prisplaner
   const [yearly, setYearly] = useState(false); // månedlig er default
-  const pricingRef = useRef(null);
+  const pricingRef = useRef(null); // Gemmer Ref til prisplan-sektionen for scroll
 
-  // Hent prisdata fra backend
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/plans`)
-      .then((res) => {
+  // HENT PRISPLANER FRA BACKEND - API-kald for at hente prisplaner ved komponent-mount. Håndterer loading og error state for at give feedback til brugeren.
+  useEffect(() => { //Useeffect med tom dependency array kører kun ved mount
+    fetch(`${API_BASE_URL}/api/plans`) //fetch kad til backend for at hente prisplaner
+      .then((res) => { //Tjekker om response er ok, ellers kaster en error
         if (!res.ok) throw new Error("Kunne ikke hente abonnementer");
-        return res.json();
+        return res.json(); //returnerer response som json hvis alt er ok
       })
-      .then((data) => { console.log("PLANS FROM API:", data); setPlans(data); setLoading(false); })
+      .then((data) => { console.log("PLANS FROM API:", data); setPlans(data); setLoading(false); }) //Sætter prisplaner i state og sætter loading til false
 
 
-      .catch((err) => { setError(err.message); setLoading(false); });
+      .catch((err) => { setError(err.message); setLoading(false); }); //Hvis der er en error, sæt error state og loading til false
   }, []);
 
   // Scroll til #pakker ved sideload
-  useEffect(() => {
-    if (window.location.hash === "#pakker") {
-      setTimeout(() => pricingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+  useEffect(() => { //Tjekker om URL'en indeholder #pakker, og hvis ja, scroll til prisplan-sektionen ved hjælp af Ref
+    if (window.location.hash === "#pakker") { //Tjekker om URL indeholder #pakker
+      setTimeout(() => pricingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300); //Bruger setTimeout for at sikre at scroll sker efter at komponenten er renderet, og bruger scrollIntoView for at scrolle til sektionen med en glidende effekt
     }
   }, []);
 
+  //Alt i return er JSX som beskriver hvordan UI skal se ud. Det inkluderer alle sektioner på forsiden, og bruger state og konstanter til at vise dynamisk indhold som prisplaner og beregninger.
   return (
     <div className="ts-page">
 
@@ -166,7 +169,7 @@ export default function Home() {
           )}
 
           {/* Prisplaner fra API */}
-          {!loading && !error && (
+          {!loading && !error && ( // Loading og error håndtering
             <>
               <div className="ts-pricing-grid">
                 {plans.slice(0, 3).map((plan) => (
@@ -241,43 +244,44 @@ export default function Home() {
 }
 
 
-// ── PricingCard Komponent ────────────────────────────────────────────────
-function PricingCard({ plan, yearly }) {
-  const price = yearly ? `${plan.yearlyPrice} kr` : `${plan.monthlyPrice} kr`;
-  const detail = yearly ? plan.yearlyDetail : plan.monthlyDetail;
-  const label = yearly ? "Vælg årlig" : "Vælg månedlig";
-  const period = yearly ? "Årligt" : "Månedligt";
+// ── PricingCard Komponent som jeg bruger til at vise hver prisplan. 
+function PricingCard({ plan, yearly }) { //Den modtager plan-data og om det er yearly eller monthly som props. Det gør den genanvendelig for både månedlige og årlige priser.
+  const price = yearly ? `${plan.yearlyPrice} kr` : `${plan.monthlyPrice} kr`; //constans til at vælge hvilken pris der skal vises baseret på yearly state
+  const detail = yearly ? plan.yearlyDetail : plan.monthlyDetail; //constans til at vælge hvilken detail tekst der skal vises baseret på yearly state
+  const label = yearly ? "Vælg årlig" : "Vælg månedlig"; //constans til at vælge hvilken label der skal vises på knappen baseret på yearly state
+  const period = yearly ? "Årligt" : "Månedligt"; //constans til at vælge hvilken periode der skal vises baseret på yearly state
 
   
 
-  const handleCheckout = async () => { console.log("plan.id:", plan.id);
+//CHECKOUT FUNKTION som kalder backend for at oprette en stripe checkout session når brugeren klikker på for knappen for at vælge en pakke.
+  const handleCheckout = async () => { console.log("plan.id:", plan.id); 
     try {
-        const res = await fetch(`${API_BASE_URL}/api/payments/create-checkout-session`, {
+        const res = await fetch(`${API_BASE_URL}/api/payments/create-checkout-session`, { //fetch kald til backend endpoint for at oprette en checkout session
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 planId: plan.id,                          // ← direkte fra API
-                billing: yearly ? "yearly" : "monthly",
+                billing: yearly ? "yearly" : "monthly", //yearly eller monthly baseret på state
                 email: "test@test.com"
             })
         });
 
-        if (!res.ok) {
+        if (!res.ok) { //hvis response ikke er ok, hent error tekst fra response og vis i console, og kast en error for at håndtere det i catch blokken
             const errorText = await res.text();
             console.error("Backend fejl:", errorText);
             throw new Error(`Checkout fejlede: ${res.status}`);
         }
 
-        const data = await res.json();
+        const data = await res.json(); //hvis alt er ok, hent data fra response som json, og log det for at se hvad der kommer tilbage (for debugging)
         window.location.href = data.url;
 
-    } catch (err) {
+    } catch (err) { //håndter eventuelle fejl ved at logge i console og vise en alert til brugeren
         console.error(err);
         alert("Noget gik galt ved betaling: " + err.message);
     }
 };
 
-  return (
+  return ( //JavaScript JSX som beskriver hvordan prisplan-kortet skal se ud. Det bruger data fra plan-prop og de constans der er defineret tidligere for at vise dynamisk indhold. Knappen kalder handleCheckout når den klikkes.
     <div className={`ts-card${plan.featured ? " featured" : ""}`}>
       <div className="ts-card-header">
         <div className="ts-card-icon">{plan.icon}</div>
