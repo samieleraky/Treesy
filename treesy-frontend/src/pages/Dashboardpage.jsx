@@ -1,100 +1,82 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Navbar from "../components/Navbar";
+import { useEffect, useState } from "react"; //useState gemmer data i state, useEffect til at hente data når komponenten indlæses
+import { Link, useNavigate } from "react-router-dom"; //Link bruges til at navigere mellem sider, useNavigate bruges til at programmatiskt navigere (f.eks. efter logout)
+import { useAuth } from "../context/AuthContext"; //useAuth henter login-status og brugerinfo fra AuthContext, som er en global state for autentificering
+import Navbar from "../components/Navbar"; //topmenu
 import "../styles/Dashboard.css";
-import API_BASE_URL from '../config';
-import TreeMap from "../components/TreeMap";
+import API_BASE_URL from '../config'; //importerer API_Base_URL fra config.js for at bruge i fetch kald
+import TreeMap from "../components/TreeMap.jsx"; //importerer TreeMap komponenten som viser en kort med træer baseret på data hentet fra backend. Den bruger react-leaflet og leaflet bibliotekerne til at vise et interaktivt kort med markører for hvert træ.
 
+//funktion komponent fmt bruges til at formatere tal med tusind-separatorer for bedre læsbarhed i dashboardet. Dette bruges i dashboardet for at vise tal som antal træer og kg CO₂ på en mere læsbar måde.
 function fmt(n) {
-  return Number(n).toLocaleString("da-DK");
+  return Number(n).toLocaleString("da-DK"); //returnerer det formaterede tal som en string, feks 12345 som bliver til 12,345 i dansk format. 
 }
 
+//ChartInstance gemmer den aktuelle chart.js graf og forhindrer flere grafer over på hinanden
 let chartInstance = null;
 
+//DashboardPage komponent er hovedkomponenten for brugerens dashboard
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [cancelling, setCancelling] = useState(false);
-  const [cancelDone, setCancelDone] = useState(false);
-  const [trees, setTrees] = useState([]);
+  const { user, logout } = useAuth(); //henter user token og logout funktion fra AuthContext for at kunne vise brugerdata og håndtere logout
+  const navigate = useNavigate(); //useNavigate bruges til at navigere brugern til en anden side efter logout
+  const [data, setData] = useState(null); //gemmer dashboard data hentet fra backend
+  const [loading, setLoading] = useState(true); //Loader mens data hentes
+  const [error, setError] = useState(null); //gemmer fejlbeskeder
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false); //Viser en bekræftelsesdialog ved opsigelse. Den er sat til false som standard, og bliver true når brugeren klikker på "Annuller abonnement" knappen, for at vise en bekræftelsesdialog. Hvis brugeren bekræfter, kaldes handleCancelSubscription funktionen for at annullere abonnementet. Hvis brugeren fortryder, sættes showCancelConfirm tilbage til false for at skjule dialogen igen.
+  const [cancelling, setCancelling] = useState(false); //setCancelling holder styr på om opsigelsen er i gang for at kunne disable knappen. 
+  const [cancelDone, setCancelDone] = useState(false); //cancelDone bruges til at vise en besked efter abonnementet er annulleret. Den er sat til false som standard, og bliver true når opsigelsen er gennemført. Når cancelDone er true, vises en besked i UI der bekræfter at abonnementet er annulleret og giver information om hvor længe brugeren stadig har adgang.
+  const [trees, setTrees] = useState([]); //gemmer trædata hentet fra backend for at vise på kortet. Det starter som en tom array, og bliver opdateret med data hentet fra backend i useEffect hooken. TreeMap komponenten bruger denne state til at vise markører på kortet for hvert træ.
 
+  //BRUGES TIL AT HENTE DASHBOARD DATA FRA BACKEND NÅR KOMPONENT INDLÆESES. 
   useEffect(() => {
     if (!user?.token) return;
-    fetch(`${API_BASE_URL}/api/dashboard`, {
-      headers: { Authorization: `Bearer ${user.token}` },
+    fetch(`${API_BASE_URL}/api/dashboard`, { //fetch kald til backend endpoint for at hente dashboard data, inklusive brugerens træer, abonnement, og statistik. Det inkluderer Authorization header med Bearer token for at autentificere requesten.
+      headers: { Authorization: `Bearer ${user.token}` },//backend forventer at token er sendt i Authorization header i format
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Kunne ikke hente dashboard");
-        return res.json();
+        if (!res.ok) throw new Error("Kunne ikke hente dashboard"); //hvis response ikke er ok, kast en fejl som bliver fanget i catch blokken
+        return res.json(); //returner response data i json siden frontend og backend kommunikerer med json data
       })
-      .then((d) => { setData(d); setLoading(false); })
-      .catch((err) => { setError(err.message); setLoading(false); });
-  }, [user]);
-  // ← Rettet: tjekker user?.token og har user som dependency
+      .then((d) => { setData(d); setLoading(false); }) //hvis data hentes succesfuldt, gem det i state og stop loaderen
+      .catch((err) => { setError(err.message); setLoading(false); }); //hvis der opstår en fejl under fetch, gem fejlbeskeden i state og stop loaderen
+  }, [user]); //useEffect afhænger af user, så det kører igen hvis user ændres (f.eks. ved login/logout)
+  
+  //HENTER TRÆER FRA BACKEND FOR AT VISE PÅ KORTET 
   useEffect(() => {
-    if (!user?.token) return;
+    if (!user?.token) return; //hvis bruger ikke er logget eller token ikke er tilgængelig, gør ikke noget
     fetch(`${API_BASE_URL}/api/trees`, {
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: { Authorization: `Bearer ${user.token}` }, //inkluder Authorization header med Bearer token for at autentificere requesten, så backend ved hvilken brugers træer der skal hentes
     })
-      .then((res) => res.json())
-      .then((d) => setTrees(d))
-      .catch(() => setTrees([]));
+      .then((res) => res.json()) //hent response data som json
+      .then((d) => setTrees(d)) //gem det hentede trædata i state så det kan bruges til at vise markører på kortet i TreeMap komponenten
+      .catch(() => setTrees([])); //hvis der opstår en fejl under fetch (f.eks. netværksfejl eller ugyldigt token), sæt trædata til en tom array for at undgå at vise forkerte data på kortet
   }, [user]);
 
-useEffect(() => {
-  console.log("TREE FETCH START");
-
-  if (!user?.token) {
-    console.log("NO TOKEN");
-    return;
-  }
-
-  fetch(`${API_BASE_URL}/api/trees`, {
-    headers: {
-      Authorization: `Bearer ${user.token}`,
-    },
-  })
-    .then(async (res) => {
-      console.log("TREES STATUS:", res.status);
-
-      const data = await res.json();
-
-      console.log("TREES DATA:", data);
-
-      setTrees(data);
-    })
-    .catch((err) => {
-      console.error("TREES ERROR:", err);
-    });
-}, [user]);
-
+//useEffect til at lave CO2 chart med chart.js
   useEffect(() => {
-    if (!data?.co2Timeline?.length) return;
+    if (!data?.co2Timeline?.length) return; //hvis data ikke findes, eller CO2 timeline er tom så stopper den bare
 
+    //DRAW FUNKTION SOM TEGNER GRAFEN
     const draw = () => {
-      const canvas = document.getElementById("db-co2-chart");
-      if (!canvas || !window.Chart) return;
+      const canvas = document.getElementById("db-co2-chart"); // finder <canvas id="db-co2-chart">. hvis ikke den findes --> stop
+      if (!canvas || !window.Chart) return; 
 
-      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; } //Hvis der allerede er et chart, bliver det fjernet 
 
+      //Data til grafen
       const labels = data.co2Timeline.map((p) => p.month);
       const values = data.co2Timeline.map((p) => p.co2);
 
       const ctx = canvas.getContext("2d");
-      const grad = ctx.createLinearGradient(0, 0, 0, 200);
+      const grad = ctx.createLinearGradient(0, 0, 0, 200); //gradient baggrund. Laver en fade effekt under linjen
       grad.addColorStop(0, "rgba(16,185,129,0.2)");
       grad.addColorStop(1, "rgba(16,185,129,0)");
 
+      //Opretter chart.js chart. Altså bygger selve grafen
       chartInstance = new window.Chart(ctx, {
-        type: "line",
+        type: "line", //linjediagram
         data: {
           labels,
-          datasets: [{
+          datasets: [{ //dataset altså selve linjen
             data: values,
             borderColor: "#065f46",
             backgroundColor: grad,
@@ -123,16 +105,16 @@ useEffect(() => {
             },
           },
           scales: {
-            y: {
+            y: { //y akse
               beginAtZero: true,
               grid: { color: "rgba(0,0,0,0.04)" },
               ticks: {
                 color: "#9ca3af",
                 font: { size: 11 },
-                callback: (v) => fmt(v) + " kg",
+                callback: (v) => fmt(v) + " kg", //formater tak
               },
             },
-            x: {
+            x: { // x akse
               grid: { display: false },
               ticks: { color: "#9ca3af", font: { size: 11 } },
             },
@@ -141,54 +123,61 @@ useEffect(() => {
       });
     };
 
+    //hvis min Chart objekt allerede findes i den globale vindue (window) er true så kaldes funktionen Draw
     if (window.Chart) {
       draw();
       return () => { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } };
     }
 
+    //Finder en eksisterende <script>-element med IDet "chartjs-cdn". dette element referer til Chart.js biblioteket
     const existing = document.getElementById("chartjs-cdn");
-    if (existing) {
+    if (existing) { //hvis det allerede eksisterer på siden, tilføjer en event listener til scriptets load-event
       existing.addEventListener("load", draw);
-      return () => { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } };
+      return () => { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } }; //Tjekker om chartInstance eksisterer. Hvis ja, kaldes destroy() for at fjerne diagrammet. Chartinstance sætters til null
     }
 
+    //Hvis det ikke findes, så loader Chart.js fra CDN
     const script = document.createElement("script");
     script.id = "chartjs-cdn";
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
-    script.onload = draw;
+    script.onload = draw; //Når den er loaded så tegnes den
     document.head.appendChild(script);
 
     return () => { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } };
   }, [data]);
 
+  //Funktion komponent til at logge ud og sendt tilbage til forsiden
   function handleLogout() {
     logout();
     navigate("/");
   }
 
+  //asynkron funktion som sender POST request til backend
   async function handleCancelSubscription() {
-    setCancelling(true);
-    try {
+    setCancelling(true); //Hvis annullering er true
+    try { //Sender POSt request til backend
       const res = await fetch(`${API_BASE_URL}/api/subscription/cancel`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${user.token}` },
+        headers: { Authorization: `Bearer ${user.token}` }, //sendes med JWT token i header
       });
-      const json = await res.json();
+      const json = await res.json(); //hvis server fejler så throw error
       if (!res.ok) throw new Error(json.message || "Noget gik galt");
 
+      //hvis annullering er en succes, opdaterer UI og viser cancel done
       setCancelDone(true);
       setShowCancelConfirm(false);
-      setData(prev => ({
+      setData(prev => ({ //opdaterer state lokalt. Den ændrer UI med det samme uden at skulle refetche API
         ...prev,
         subscription: { ...prev.subscription, status: "cancelled" }
       }));
     } catch (err) {
-      alert("Fejl: " + err.message);
+      alert("Fejl: " + err.message); //error handling
     } finally {
       setCancelling(false);
     }
   }
 
+  //Loading af dashboard 
   if (loading) {
     return (
       <>
@@ -214,6 +203,8 @@ useEffect(() => {
     );
   }
 
+  //DESTRUCTURING AF DATA. JEG tager værdier ud af et objekt (data) og gemmer dem i variabler på en kortere og mere overskuelig måde
+  //viser et andet UI hvis brugeren ikke har en subscription
   const { customer, subscription, stats, co2Timeline, transactions } = data;
 
   if (!subscription) {
@@ -235,6 +226,7 @@ useEffect(() => {
     );
   }
 
+  //Hvis følgende hvis bruger har en subscription
   return (
     <>
       <Navbar forceScrolled={true} />
@@ -305,7 +297,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* 🌳 TRÆER */}
+          {/* 🌳 TRÆER MAP*/}
           <div className="db-card">
             <div className="db-card-header">
               <h3 className="db-card-title">Dine træer 🌳</h3>
@@ -315,13 +307,14 @@ useEffect(() => {
 
           <div className="db-sub-info">
             <span>
-              <strong>{subscription.planName}</strong> — {subscription.billing === "yearly" ? "Årlig" : "Månedlig"} · Status: {subscription.status}
+              <strong>{subscription.planName}</strong> — {subscription.billing === "yearly" ? "Årlig" : "Månedlig"} · Status: {subscription.status}  
             </span>
             <span style={{ color: "#6b7280", fontSize: "0.82rem" }}>
               Næste betaling: {subscription.currentPeriodEnd}
             </span>
           </div>
 
+{/*CO2 BIDRAG OVER TID */}
           {co2Timeline?.length > 0 && (
             <div className="db-card">
               <div className="db-card-header">
@@ -339,6 +332,7 @@ useEffect(() => {
             </div>
           )}
 
+{/*SENESTE TRANSAKTIONER*/}
           {transactions?.length > 0 && (
             <div className="db-card">
               <div className="db-card-header">
@@ -365,6 +359,7 @@ useEffect(() => {
             </div>
           )}
 
+{/*ABONNEMENT STATUS*/}
           {subscription?.status === "active" && (
             <div className="db-card" style={{ borderTop: "2px solid #fee2e2" }}>
               <div className="db-card-header">

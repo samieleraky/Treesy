@@ -1,21 +1,25 @@
 import { useState } from "react";
 import '../styles/styles.css';
 
+//KOntakt funktion som håndterer form input og submission
 export default function Kontakt() {
-  const [form, setForm] = useState({ navn: "", email: "", besked: "" });
-  const [success, setSuccess] = useState(false);
+  const [form, setForm] = useState({ navn: "", email: "", besked: "" }); //usestate til at holde styr på form input værdier som navn, email og besked
+  const [success, setSuccess] = useState(false); //usestate til at vise en succes besked når form er indsendt
 
+  //constant handleChange funktioner som opdaterer form state når brugeren skriver i input felterne. Den bruger event.target.name for at identificere hvilket felt der opdateres og event.target.value for at få den nye værdi.
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  //handleSubmit funktion som håndterer form submission. 
+  const handleSubmit = (e) => { //e er event objektet fra form submission
     e.preventDefault();
-    if (!form.navn || !form.email || !form.besked) return;
+    if (!form.navn || !form.email || !form.besked) return; //Hvis nogen af felterne er tomme, gør ikke noget
    
-    setSuccess(true);
-    setForm({ navn: "", email: "", besked: "" });
+    setSuccess(true); //Sæt success state til true for at vise succes beskeden
+    setForm({ navn: "", email: "", besked: "" }); //nulstil form felterne efter submission. I en rigtig app ville du også sende dataen til en backend server
   };
 
+  //return komponent som indeholder javascript JSX som beskriver hvordan kontakt siden skal se ud. Den inkluderer en hero sektion med en baggrundsbillede og titel, en formular sektion hvor brugeren kan indtaste deres navn, email og besked, og en kontakt info sektion med andre måder at kontakte virksomheden på. Der er også en CTA sektion i bunden for at opfordre brugeren til at se pakker eller læse mere om virksomheden.
   return (
     <div className="ts-page">
 

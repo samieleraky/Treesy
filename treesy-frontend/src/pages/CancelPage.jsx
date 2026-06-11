@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar"; // ← tilpas stien hvis nødvendigt
 
+//keyframes er defereneret til at animere elementer på siden, og klasserne definerer stilen for de forskellige dele af siden, såsomkortet, ikonet, titlen, beskrivelsen og knapperne. Det hele er designet til at skabe en indbydende og informativ annulleringsside for brugere, der har oplevet problemer med betalingen. Stilen er også responsiv for at sikre en god oplevelse på både desktop og mobile enheder.
 const STYLES = `
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -110,10 +111,11 @@ const STYLES = `
   }
 `;
 
+//min Cancelpage komponent som viser en besked om at betalingen er annuleret og giver mulighed for at prøve igen eller kontakte suppert.
 export default function CancelPage() {
-  useEffect(() => {
-    const id = "can-styles";
-    if (!document.getElementById(id)) {
+  useEffect(() => { //useEffect bruges til at injecte CSS-styles direkte i dokumentets head når komponenten mountes. Det sikrer at stilen kun er tilgængelig på denne side og ikke påvirker andre dele af appen.
+    const id = "can-styles"; //unik id for style tag for at undgå duplikater
+    if (!document.getElementById(id)) { //hvis style tag ikke allerede findes, opret det og tilføj det til head
       const tag = document.createElement("style");
       tag.id = id;
       tag.textContent = STYLES;
@@ -121,6 +123,7 @@ export default function CancelPage() {
     }
   }, []);
 
+  //Min Return komponent som indeholder javascript JSX som beskriver hvordan siden skal se ud. Den inkluderer en Navbar øverst, og et kort med en ikon, titel, beskrivelse og to knapper for at prøve igen eller kontakte support.
   return (
     <>
       <Navbar forceScrolled={true} />

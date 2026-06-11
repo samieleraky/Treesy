@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; //import React for at kunne skrive jsx
 import '../styles/LegalPages.css'; // Vi samler al CSS i én fil
 
 const Disclaimer = () => {
