@@ -1,12 +1,11 @@
-import React from 'react';
+import React from 'react'; //import react for at skrive jsx
 import '../styles/styles.css';
 import {useEffect} from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';//useLocation er en hook fra Reat router fortæller mig hvor i appen jeg er ligenu
 import API_BASE_URL from '../config';
 
-// Konfigurer API_BASE_URL i en separat fil (config.js) og importér den her
-//const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5106';
 
+//HandleSeedCheckout er en asynkron arrow funktion som gemmes i en constant. Den bruges til at sende en POST-request til backend via fetch
 const handleSeedCheckout = async (planId) => {
   try {
     const res = await fetch(`${API_BASE_URL}/api/payments/create-checkout-session`, {
@@ -15,11 +14,11 @@ const handleSeedCheckout = async (planId) => {
       body: JSON.stringify({
         planId,
         billing: "onetime",
-        email: ""  // eller indfang e-mail hvis du vil
+        email: ""  // Der sendes også et email-felt med i requesten. I den nuværende version er det en tom string, men feltet kan senere bruges til at sende brugerens email til backend
       })
     });
 
-    if (!res.ok) throw new Error(`Checkout fejlede: ${res.status}`);
+    if (!res.ok) throw new Error(`Checkout fejlede: ${res.status}`); //hvis response ikke er okay kastes en error message
     const data = await res.json();
     window.location.href = data.url;
   } catch (err) {
@@ -28,20 +27,22 @@ const handleSeedCheckout = async (planId) => {
   }
 };
 
+//ErhvervsPage er en React funktionel, som er gemt i en konstant variabel ved hjælp af en arrow function. Komponenten repræsenterer erhvervssiden og indeholder logik til automatisk scrolling til bestemte sektioner på siden.
 const ErhvervsPage = () => {
-  const location = useLocation();
+  const location = useLocation(); //jeg gemmer URL-informationen i variablen location, så jeg kan undersøge, om URL'en indeholder et hash, f.eks. #kontakt eller #priser.
 
-  useEffect(() => {
-    if (location.hash) {
-      const el = document.getElementById(location.hash.replace("#", ""));
+  useEffect(() => { //useEffect bruges til at reagere på ændringer i URL. Hver gang location ændrer sig, kører funktionen igen
+    if (location.hash) { //Hvis elementet findes, scrolles brugeren automatisk ned til den relevante sektion på siden.
+      const el = document.getElementById(location.hash.replace("#", "")); //Når URL’en indeholder et #link, så find elementet med samme id og scroll ned til det
       if (el) {
         setTimeout(() => {
-          el.scrollIntoView({ behavior: "smooth" });
+          el.scrollIntoView({ behavior: "smooth" }); //behavior "smooth" bruges til at lave en blød animation
         }, 100);
       }
     }
   }, [location]);
   
+  //Return komponent som indeholder min hero sektion i javascript jsx som vises i UI. Den indeholder et baggrundsbillede
   return (
     <div className="ts-page">
       {/* Hero Section */}
@@ -542,4 +543,4 @@ const seedProducts = [
   { icon: '🏆', name: 'Legend Planter', trees: '13.000', price: '95.000 kr', pricePerTree: '(7,31 kr/træ)', planId: 'legend-planter-seed', popular: false }
 ];
 
-export default ErhvervsPage;
+export default ErhvervsPage; //Det betyder at denne komponent må ændre filer importere og bruge
