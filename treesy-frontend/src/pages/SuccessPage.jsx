@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import Navbar from "../components/Navbar"; // ← tilpas stien hvis nødvendigt
+import { useEffect, useState } from "react"; //UseState bruges til at gemme state der ændrer sig, useEffect til at hente eller tilføje (som fx styles)
+import { useSearchParams, Link } from "react-router-dom"; // useSearchParams = Læser URL-parametre (fx ?session_id=xxx). Link = React Router's version af <a> tags (uden side-genindlæsning)
+import Navbar from "../components/Navbar"; 
 import API_BASE_URL from "../config";
 
 
-
+//Min Styles konstant
 const STYLES = `
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -132,6 +132,7 @@ const STYLES = `
   }
 `;
 
+//Objekt der oversætter plan-IDer til læsbare danske navne
 const PLAN_LABELS = {
   "active-planter":         "Active Planter — 130 træer/år",
   "committed-planter":      "Committed Planter — 260 træer/år",
@@ -143,35 +144,40 @@ const PLAN_LABELS = {
   "legend-planter-seed":    "Legend Planter — 13.000 Seed Credits",
 };
 
+//objekt der oversætter faktureringstype til læsbare navne
 const BILLING_LABELS = {
   monthly: "Månedligt abonnement",
   yearly:  "Årligt abonnement",
   onetime: "Engangskøb",
 };
 
+//Funktion Successpage
 export default function SuccessPage() {
-  const [searchParams] = useSearchParams();
-  const [details, setDetails] = useState(null);
+  const [searchParams] = useSearchParams(); //Læser URL for at finde session_id
+  const [details, setDetails] = useState(null); // Jeg opretter state-variablen details med useState(null). Den initiale værdi er null, og funktionen setDetails bruges til at opdatere værdien af details.
 
+  //FØRSTE useEffect som bruges til at tilføje CSS til dokuementets <head>
   useEffect(() => {
-    const id = "suc-styles";
+    const id = "suc-styles"; //unik id for at undgå duplikering
     if (!document.getElementById(id)) {
       const tag = document.createElement("style");
       tag.id = id;
       tag.textContent = STYLES;
       document.head.appendChild(tag);
     }
-  }, []);
+  }, []);// Tomt dependency-array = KUN første gang komponenten vises
 
+  //ANDEN useEffect: henter betalingsdetaljer fra serveren
   useEffect(() => {
-    const sessionId = searchParams.get("session_id");
+    const sessionId = searchParams.get("session_id"); //læser session_id fra URL-parametrene
     if (!sessionId) return;
     fetch(`${API_BASE_URL}/api/payments/verify-session?sessionId=${sessionId}`)
-      .then((res) => res.json())
-      .then((data) => setDetails(data))
+      .then((res) => res.json()) //omdanne svare til json
+      .then((data) => setDetails(data)) //gemmer data i state
       .catch((err) => console.error("Verification failed:", err));
   }, [searchParams]);
 
+  //Return komponent som er hvad der vises på skærmen
   return (
     <>
       <Navbar forceScrolled={true} />

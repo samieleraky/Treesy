@@ -6,66 +6,75 @@ import "../styles/Login.css"; // Sørg for at have passende styles for login-sid
 import API_BASE_URL from '../config'; // Tilføj denne linje for at importere API_BASE_URL
 
 
-
+// Login funktion - hovedkomponent for login siden
 export default function LoginPage() {
-  const [tab, setTab] = useState("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [needsPassword, setNeedsPassword] = useState(false);
+  //States: gemmer al dynamisk data i komponenten
+  const [tab, setTab] = useState("login"); //initialiserer jeg en state-variabel ved navn tab med startværdien "login" ved hjælp af useState-hooket. Gennem destrukturering udpakker jeg returværdien, som er et array med to elementer: den aktuelle state-værdi (tab) og en setter-funktion (setTab). Når brugeren skifter mellem login- og register-fanerne, kaldes setTab med henholdsvis "login" eller "register", hvilket får komponenten til at re-rendre med den nye fane akti
+  const [email, setEmail] = useState(""); //gemmer brugerns email
+  const [password, setPassword] = useState(""); // Jeg bruger useState til at oprette en state-variabel password. Samtidig får jeg en funktion kaldet setPassword som jeg kan bruge til at ændre værdien af password. Når jeg kalder setPassword med en ny værdi, vil komponenten automatisk genrendere med den opdaterede værdi." 
+  const [name, setName] = useState(""); // "Jeg initialiserer en state-variabel kaldet name med en tom streng ved hjælp af useState-hooket. Destruktureringen giver mig både den nuværende værdi (name) og en setter-funktion (setName). I inputfeltets onChange-hændelse kalder jeg setName med e.target.value, hvilket opdaterer staten. Når staten ændres, trigger React et re-render af komponenten med den nye name-værdi – præcis som du beskriver."
+  const [error, setError] = useState(null); //gemmer eventuelle fejlbeskeder
+  const [loading, setLoading] = useState(false); // // Deaktiverer knap og viser spinner
+  const [needsPassword, setNeedsPassword] = useState(false); //Special tilstand: bruger har købt pakke men mangler kodeord
 
+  //Jeg bruger destrukturering til at udpakke tre specifikke værdier fra det objekt som useAuth()-hooket returnerer. useAuth er en custom hook – altså en hook jeg selv (eller en anden udvikler) har bygget – som giver mig adgang til autentificeringsfunktionalitet i hele applikationen.
   const { login, logout, isLoggedIn } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); //jeg initialiserer en navigate-funktion ved at kalde useNavigate(). Denne funktion giver mig mulighed for navigation mellem sider
 
+  //Hvis bruger allede er logget ind så sendes brugeren til dashboard
   useEffect(() => {
     if (isLoggedIn) navigate("/dashboard", { replace: true });
   }, [isLoggedIn, navigate]);
 
+  //asynkron funktion handleSubmit som kører når brugeren trykker Log in eller Opret Konto
   async function handleSubmit(e) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+    e.preventDefault(); //forhindrer at siden genindlæses
+    setError(null); //nulstiller eventuelle gamle fejl
+    setLoading(true); //Viser at vi er igang med at sende data
 
+    //Speciel tilfælde: Bruger mangler at vælge password (de har allerede købt en pakke) 
     if (needsPassword) {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/Auth/set-password`, {
+        const res = await fetch(`${API_BASE_URL}/api/Auth/set-password`, { //fetch kald til backend for at forsøge at sætte kodeord for eksistrende bruger
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password, name }),
         });
         const data = await res.json();
         if (!res.ok) { setError(data.message ?? "Noget gik galt"); return; }
-        login(data);
-        navigate("/dashboard");
+        login(data); //gemmer brugerdata i auth systemet
+        navigate("/dashboard"); //går til dashboard
       } catch {
         setError("Kunne ikke forbinde til serveren");
       } finally {
-        setLoading(false);
+        setLoading(false);//stopper loading uanset om det lykkedes eller ej
       }
-      return;
+      return; //funktionen stopper her
     }
 
+    // NORMAL LOGIN/ELLER REGISTRERING:
+    // Vælger hvilket endpoint vi skal bruge baseret på fanen (login eller register)
     const endpoint = tab === "login"
-        ? `${API_BASE_URL}/api/Auth/login`
-  : `${API_BASE_URL}/api/Auth/register`;
+        ? `${API_BASE_URL}/api/Auth/login` //login endpoint
+  : `${API_BASE_URL}/api/Auth/register`; //register endpoint
 
+  // Vælger hvilke data der skal sendes baseret på fanen
     const body = tab === "login"
-      ? { email, password }
-      : { email, password, name };
+      ? { email, password } // Login: kun email og kodeord
+      : { email, password, name }; //Register: også navn
 
-    try {
+    try { //try-catch. Sender data til Server via POST
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
-      const data = await res.json();
+      const data = await res.json(); //Henter data fra serveren
 
+      //Hvis serveren svarer med en fejl
       if (!res.ok) {
-        if (data.message === "no_password") {
+        if (data.message === "no_password") { // Speciel case: Brugeren findes men har ikke sat kodeord endnu
           setNeedsPassword(true);
           setError(null);
           return;
@@ -74,15 +83,17 @@ export default function LoginPage() {
         return;
       }
 
+       // ALT OK: Gemmer brugerdata og sender til dashboard
       login(data);
       navigate("/dashboard");
     } catch {
       setError("Kunne ikke forbinde til serveren");
     } finally {
-      setLoading(false);
+      setLoading(false); //stopper loading
     }
   }
 
+  //Return komponent som viser UI i javascript jsx. HVIS BRUGEREN MANGLER KODEORD
   if (needsPassword) {
     return (
       <>
@@ -119,6 +130,7 @@ export default function LoginPage() {
     );
   }
 
+  // NORMAL LOGIN/REGISTRERING SIDE (det meste af tiden vises denne)
   return (
     <>
       <Navbar forceScrolled={true} />
@@ -154,6 +166,7 @@ export default function LoginPage() {
 
           {error && <div className="login-error">{error}</div>}
 
+{/*LOGIN FORMULAR */}
           <form onSubmit={handleSubmit}>
             {tab === "register" && (
               <div className="login-field">

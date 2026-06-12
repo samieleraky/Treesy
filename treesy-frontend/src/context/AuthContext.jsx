@@ -1,44 +1,51 @@
 import { createContext, useContext, useState, useEffect } from "react";
+// createContext: Opretter en beholder til data der skal deles på tværs af komponenter
+// useContext: Bruges til at læse data fra en Context
+// useState: Gemmer brugerdata og loading-status
+// useEffect: Kører kode når komponenten mountes (her: gendan bruger fra localStorage)
 
 // ─── Context ──────────────────────────────────────────────────────────────────
+// Opretter en Context beholder med startværdien null
+// Context er som en "global state" der kan tilgås fra ALLE komponenter
 const AuthContext = createContext(null);
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
-// Placer <AuthProvider> rundt om hele din app i main.jsx eller App.jsx
-// så alle sider kan tilgå login-state via useAuth()
+// AuthProvider er en "wrapper" komponent der omgiver hele applikationen
+// Typisk placeres den i App.js eller main.jsx så ALLE komponenter har adgang
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);       // { email, name, token }
-  const [loading, setLoading] = useState(true); // true mens vi tjekker localStorage
+  const [user, setUser] = useState(null);       // user: Gemmer den loggede brugers data (email, name, token) Initialiseres som null = ingen bruger er logget ind
+  const [loading, setLoading] = useState(true);  // loading: True mens vi tjekker localStorage (undgår "flash" af uautoriseret indhold)
 
-  // Ved sideload: gendan bruger fra localStorage hvis token stadig er gemt
+  // Ved sideload: Formål: Tjekker om brugeren var logget ind FØR (fra sidste besøg)
   useEffect(() => {
-    const stored = localStorage.getItem("treesy_user");
+    const stored = localStorage.getItem("treesy_user"); // Forsøger at hente gemt bruger fra localStorage
     if (stored) {
       try {
-        setUser(JSON.parse(stored));
+        setUser(JSON.parse(stored)); // Hvis der ER gemt data, konverter JSON-streng til JavaScript objekt
       } catch {
-        localStorage.removeItem("treesy_user");
+        localStorage.removeItem("treesy_user"); // Hvis JSON'en er korrupt, slet den så vi ikke får fejl senere
       }
     }
-    setLoading(false);
-  }, []);
+    setLoading(false); //uanset hvad: loading er færdig 
+  }, []); // tom array --> kun kun en gang ved start
 
-  // Kaldes efter succesfuldt login eller register
-  function login(userData) {
+  // LOGIN funktion som kaldes efter succesfuldt backend-login
+  function login(userData) { // Udtrækker KUN de nødvendige felter (email, name, token)
+    // Vi gemmer IKKE password, da det er dårlig sikkerhedspraksis
     const u = { email: userData.email, name: userData.name, token: userData.token };
-    setUser(u);
+    setUser(u);  //Gemmer bruger i Reats state (andre komponenter kan nu se at bruger er logget ind)
     localStorage.setItem("treesy_user", JSON.stringify(u));
   }
 
   // Kaldes ved logout
   function logout() {
-    setUser(null);
-    localStorage.removeItem("treesy_user");
+    setUser(null); //fjerner brugeren fra react State
+    localStorage.removeItem("treesy_user"); //Fjerner bruger fra local storage (så de ikke er logget ind efter genindlæsning)
   }
 
-  return (
+  // RETURN: Gør auth-data tilgængelig for ALLE børnekomponenter
+  return ( 
     <AuthContext.Provider value={{ user, login, logout, loading, isLoggedIn: !!user }}>
-      {children}
+      {children}   {/* Alle komponenter inde i AuthProvider får adgang til auth-data */}
     </AuthContext.Provider>
   );
 }
@@ -47,7 +54,7 @@ export function AuthProvider({ children }) {
 // Brug denne hook i alle komponenter der har brug for auth-info:
 // const { user, login, logout, isLoggedIn } = useAuth();
 export function useAuth() {
-  const ctx = useContext(AuthContext);
+  const ctx = useContext(AuthContext); // useContext henter værdien fra AuthContext
   if (!ctx) throw new Error("useAuth skal bruges inden i <AuthProvider>");
   return ctx;
 }
