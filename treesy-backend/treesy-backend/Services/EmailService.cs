@@ -228,7 +228,7 @@ namespace treesy_backend.Services
             var fromName = _config["SendGrid:FromName"];
 
             var client = new SendGridClient(apiKey); //Jeg erklærer en variabel client som er en ny instans af SendGridClient, og jeg passerer apiKey som parameter til constructoren. Dette opretter en klient, som jeg kan bruge til at interagere med SendGrid's API og sende emails.
-            var from = new EmailAddress(fromEmail, fromName); //Jeg erklærer en variabel from som er en ny instans af EmailAddress, og jeg passerer fromEmail og fromName som parametre. Dette repræsenterer afsenderens emailadresse og navn, som vil blive vist i den email, der sendes til modtageren. Det hjælper med at gøre emailen mere personlig og genkendelig for modtageren.
+            var from = new EmailAddress("samieleraky93@gmail.com", "TreesyTeam"); //Jeg erklærer en variabel from som er en ny instans af EmailAddress, og jeg passerer fromEmail og fromName som parametre. Dette repræsenterer afsenderens emailadresse og navn, som vil blive vist i den email, der sendes til modtageren. Det hjælper med at gøre emailen mere personlig og genkendelig for modtageren.
             var to = new EmailAddress(toEmail, toName); // jeg erklærer en variabel to som er en ny instans af EmailAddress, og jeg passerer toEmail og toName som parametre. Dette repræsenterer modtagerens emailadresse og navn, som vil blive brugt til at sende emailen til den rigtige person og for at personliggøre emailen ved at inkludere modtagerens navn i indholdet.
 
             var msg = MailHelper.CreateSingleEmail( //Jeg erklærer en variabel msg som opretter en email ved hjælp af SendGrid´s MailHelper.CreateSingleEmail metode. Den indeholder følgende paremetere
