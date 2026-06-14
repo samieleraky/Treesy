@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop.jsx";
-import Checkout from "./pages/Checkout.jsx";
 import Home from "./pages/Home.jsx"
 import OmTreesy from "./pages/OmTreesy.jsx"
 import Navbar from "./components/Navbar.jsx"
