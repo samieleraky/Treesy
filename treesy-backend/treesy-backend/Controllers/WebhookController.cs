@@ -12,15 +12,15 @@ namespace Treesy.Api.Controllers
     [Route("api/stripe/webhook")] //route for controlleren. Stripe sender webhook anmodninger til endpointet "api/stripe/webhook".
     public class WebhookController : ControllerBase //Jeg opretter en controllerklasse, som nedarver fra ControllerBase. Dette giver adgang til metoder som Ok(), BadRequest() og adgang til HTTP-requesten
     {
-        private readonly IConfiguration _config; //dependency injection. Jeg erklærer en privat readonly variabel til konfigurationsdata. Den bruges til at hente værdier fra eksempelvis appsettings.json, herunder Stripe Webhook Secret.
-        private readonly TreesyDbContext _db; //bruges til at oprette og opdatere databasne
+        private readonly IConfiguration _config; //Dependency injection. IConfiguration bruges til at værdier fra eksempelvis appsettings.json
+        private readonly TreesyDbContext _db; //bruges til at oprette og opdate databasen
         private readonly EmailService _email; //bruges til at sende emails
 
         public WebhookController(IConfiguration config, TreesyDbContext db, EmailService email) //Constructor som tager IConfiguration, TreesyDbContext og EmailService som input. Disse afhængigheder injiceres af ASP.NET Core's dependency injection system, så jeg kan bruge dem i controllerens metoder til at håndtere webhook-anmodninger, interagere med databasen og sende emails
         {
             _config = config;
-            _db = db;
-            _email = email;
+            _db = db; 
+            _email = email; 
         }
 
         [HttpPost] //Jeg opretter en HTTP-post endpoint, som betyder at Post-metoden kan kaldes via HTTP Post-anmodninger.
@@ -29,7 +29,7 @@ namespace Treesy.Api.Controllers
             var json = await new StreamReader(Request.Body).ReadToEndAsync(); //Jeg erklærer en variabel json. Den indeholder hele HTTP requestens body som en string. Jeg bruger en StreamReader til at læse requestens body stream og ReadToEndAsync for at læse hele streamen asynkront. Dette er nødvendigt fordi Stripe sender event-data i requestens body som JSON, og jeg skal have det som en string for at kunne parse det senere til et Stripe.Event objekt.
             Stripe.Event stripeEvent; // Jeg erklærer en variabel StripeEvent, som senere skal indeholde det verificerede Stripe-event.
 
-            try //Try catch til at håndtere eventuelle fejl der kan opstå under verifikation af stripe-eventet
+            try //try catch der håndtere evt fejl under verifikation af stripe event
             {
                 stripeEvent = Stripe.EventUtility.ConstructEvent( //Jeg bruger Stripe's EventUtility.ConstructEvent metode til at verificere og konstruere et Stripe.Event objekt fra den modtagne JSON og Stripe-Signature headeren. Denne metode sikrer at eventet faktisk kommer fra Stripe og ikke er blevet manipuleret undervejs. Den tager tre parametre:
                     json, //Json var fra linje 29 som indeholder hele HTTP requestens body som en string, som er det rå event-data fra Stripe

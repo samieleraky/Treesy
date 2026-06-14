@@ -2,14 +2,14 @@
 
 namespace Treesy.Api.Controllers
 {
-    [ApiController] //fortæller ASP.Net Core at denne klasse er en API-controller, hvilket betyder at den håndterer HTTP-anmodninger og returnerer data (typisk i JSON-format) i stedet for HTML-visninger
-    [Route("api/[controller]")] //jeg angiver ruten for denne controller. endpointet bliver "api/plans" fordi controllerens navn er "PlansController" (ASP.Net Core fjerner "Controller" fra navnet for at bestemme ruten)
-    public class PlansController : ControllerBase //Jeg opretter en controller klasser som nedarver fra Controllerbase, som giver adgang til metoder såsom OK() og BadRequest()
+    [ApiController] 
+    [Route("api/[controller]")] 
+    public class PlansController : ControllerBase 
     {
-        [HttpGet] //Jeg angiver at GetPlans kan kaldes via en HTTP-get 
-        public IActionResult GetPlans() //Jeg opretter en metode GetPlans som returnere en list over de abonnementer, systemet tilbyder. Systemet returnere en IActionResult som er en standard måde at returnere HTTP-responser i ASP.Net Core. Det kan være en succes (OK) eller en fejl (BadRequest) afhængigt af situationen
+        [HttpGet] 
+        public IActionResult GetPlans() 
         {
-            var plans = new[] //jeg er klærer variablen plans som en array af objekter, hvor hver objekt repræsenterer et abonnement
+            var plans = new[] //jeg erklærer variablen plans som en array af objekter, hvor hver objekt repræsenterer et abonnement
             {
                 new { //jeg erklærer et abonnement med id, name, subtitle, icon, featured, features, monthlyPrice, yearlyPrice, monthlyDetail og yearlyDetail
                     id = "active-planter", //unikt id for abonnementet, bruges til at identificere det i systemet og i Stripe

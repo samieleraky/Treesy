@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization; //importerer namespace for Authorize-attribut, som bruges til at beskytte controllerens endpoints, så kun autentificerede brugere kan få adgang
-using Microsoft.AspNetCore.Mvc; //importerer namespace for ControllerBase, ApiController, Route, HttpPost, IActionResult. bruges til at udvikle API-controllers
-using Microsoft.EntityFrameworkCore; //importerer namespace for Entity Framework Core, som bruges til at interagere med databasen. Det giver adgang til metoder som Include(), FirstOrDefaultAsync(), SaveChangesAsync() osv., som bruges i controlleren til at hente og opdatere data i databasen
+﻿using Microsoft.AspNetCore.Authorization; //Authorize-attribut, som bruges til at beskytte controllerens endpoints, så kun autentificerede brugere kan få adgang
+using Microsoft.AspNetCore.Mvc; //namespace for ControllerBase, ApiController, Route, HttpPost, IActionResult. bruges til at udvikle API-controllers
+using Microsoft.EntityFrameworkCore; //Entity Framework Core, som bruges til at interagere med databasen. Det giver adgang til metoder som Include(), FirstOrDefaultAsync(), SaveChangesAsync() osv., som bruges i controlleren til at hente og opdatere data i databasen
 using System.Security.Claims; //importerer namespace for Claims, som bruges til at hente oplysninger om den autentificerede bruger (f.eks. brugerens ID) fra JWT-tokenet i HTTP-anmodningen. Det bruges i controlleren til at identificere hvilken kundes abonnement der skal annulleres
 using Stripe;
 using treesy_backend.Data;
